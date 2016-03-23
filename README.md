@@ -45,9 +45,8 @@ Windows:
 
 #### Notes:
 
-- File should be named "sh.bat" or have its name end with ".sh.bat".
+- File should be named exactly "sh.bat" or have its name end with ".sh.bat".
 - Window users can also download then double click. The output window will not automatically close.
 - Window users can drop files onto the script to pass them as arguments.
 - Window users do not need to type .bat to use.
-- For a single script installer, sh.bat can be left with this file name.
 - Some fun 4 letter names: ba.sh.bat, bu.sh.bat, ca.sh.bat, da.sh.bat, di.sh.bat, fi.sh.bat, go.sh.bat, ha.sh.bat, hu.sh.bat, pu.sh.bat, ru.sh.bat, sa.sh.bat, se.sh.bat, wa.sh.bat, wi.sh.bat.
