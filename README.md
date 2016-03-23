@@ -1,6 +1,17 @@
-# sh.bat
-Single script that runs .sh or .ps1 as needed.
+# sh.bat Template
 
+Create a single copy-paste that download-runs your script:
+
+Linux:
+
+    curl -s -L https://github.com/RefinedSoftwareLLC/sh.bat/raw/master/sh.bat | sh
+
+Windows:
+
+    powershell -nop -c "iex(New-Object Net.WebClient).DownloadString('https://github.com/RefinedSoftwareLLC/sh.bat/raw/master/sh.bat')"
+
+Create a single script that runs on Linux (.sh) and Windows (.ps1):
+    
     #!/bin/sh   #^
     #:Loading PowerShell:## 2>nul &@SETLOCAL EnableDelayedExpansion&echo off
     # 2>nul &(if exist "%0" (copy "%0" "%0.ps1" /y >nul)else (copy "%0.bat" "%0.ps1" /y >nul))
