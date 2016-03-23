@@ -45,7 +45,7 @@ Windows:
 
 #### Notes:
 
-- File should be named exactly "sh.bat" or have its name end with ".sh.bat".
+- File name should end with ".sh.bat" or, if the only script, it can be exactly "sh.bat".
 - Window users can also download then double click. The output window will not automatically close.
 - Window users can drop files onto the script to pass them as arguments.
 - Window users do not need to type .bat to use.
