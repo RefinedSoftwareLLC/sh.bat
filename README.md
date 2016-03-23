@@ -1,6 +1,6 @@
 ## sh.bat Template
 
-#### Create a single copy-paste that download-runs your script:
+#### Create a copy-paste (per platform) that download-runs your script:
 
 Linux:
 
