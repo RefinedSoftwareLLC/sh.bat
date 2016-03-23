@@ -10,7 +10,7 @@ Windows:
 
     powershell -nop -c "iex(New-Object Net.WebClient).DownloadString('https://github.com/RefinedSoftwareLLC/sh.bat/raw/master/sh.bat')"
 
-Create a single script that runs on Linux (.sh) and Windows (.ps1):
+Create your single script that runs on Linux (.sh) and Windows (.ps1):
     
     #!/bin/sh   #^
     #:Loading PowerShell:## 2>nul &@SETLOCAL EnableDelayedExpansion&echo off
@@ -42,3 +42,7 @@ Create a single script that runs on Linux (.sh) and Windows (.ps1):
     ################
     ### .ps1 end ###
     ################
+
+Notes:
+
+Window users can also download then double click. The output window will not automatically close.
