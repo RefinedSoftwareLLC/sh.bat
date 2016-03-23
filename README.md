@@ -46,3 +46,7 @@ Windows:
 #### Notes:
 
 - Window users can also download then double click. The output window will not automatically close.
+- Window users can drop files on script to pass it arguments.
+- Window users do not need to type .bat to use.
+- For a single script installer sh.bat can be left with this file name.
+- Some fun 4 letter names: ba.sh.bat, bu.sh.bat, ca.sh.bat, da.sh.bat, di.sh.bat, fi.sh.bat, go.sh.bat, ha.sh.bat, hu.sh.bat, pu.sh.bat, ru.sh.bat, sa.sh.bat, se.sh.bat, wa.sh.bat, wi.sh.bat.
