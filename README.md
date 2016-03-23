@@ -7,7 +7,7 @@ Single script that runs .sh or .ps1 as needed.
     # 2>nul &powershell -ExecutionPolicy Bypass -noprofile -file "%0.ps1" %*&set error=!errorlevel!&del "%0.ps1"
     # 2>nul &(if "%0" neq "%~0" (echo.&echo Press any key to close...&pause >nul))&exit /b !error!
     @'
-    #' >/dev/null 2>&1 # sh.bat version 0.1 # DO NOT MODIFY THESE 7 LINES
+    #' 2>/dev/null # sh.bat version 0.1 # DO NOT MODIFY THESE 7 LINES
     
     ################
     ### .sh mode ###
