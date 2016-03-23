@@ -1,6 +1,6 @@
 #!/bin/sh   #^
 #:Loading PowerShell:## 2>nul &@SETLOCAL EnableDelayedExpansion&echo off
-# 2>nul &del "%0.ps1" 2>nul&(if exist "%0" (copy "%0" "%0.ps1" /y >nul)else (copy "%0.bat" "%0.ps1" /y >nul))
+# 2>nul &(if exist "%0" (copy "%0" "%0.ps1" /y >nul)else (copy "%0.bat" "%0.ps1" /y >nul))
 # 2>nul &powershell -ExecutionPolicy Bypass -noprofile -file "%0.ps1" %*&set error=!errorlevel!&del "%0.ps1"
 # 2>nul &(if "%0" neq "%~0" (echo.&echo Press any key to close...&pause >nul))&exit /b !error!
 @'
