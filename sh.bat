@@ -18,7 +18,7 @@ echo "passed: $*"
 ###############
 
 exit 0
-'@ | out-null ### DO NOT MODIFY THESE 2 LINES ###
+'@|out-null ### DO NOT MODIFY THESE 2 LINES ###
 
 #################
 ### .ps1 mode ###
