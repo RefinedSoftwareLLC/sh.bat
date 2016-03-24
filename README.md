@@ -29,7 +29,7 @@ Windows:
     ### .sh end ###
     ###############
     
-    '@#' 2>/dev/null;exit 0 ### DO NOT MODIFY THIS LINE ###
+    '@ #' 2>/dev/null;exit 0 ### DO NOT MODIFY THIS LINE ###
     
     #################
     ### .ps1 mode ###
