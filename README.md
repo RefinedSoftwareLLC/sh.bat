@@ -43,7 +43,7 @@ Windows:
 
 #### Notes:
 
-- Window users will unfortunately always see this first:
+- Running from windows' command prompt will unfortunately always display this first:
 
         drive:\path\>#!/bin/sh  ##:Loading PowerShell:##  2>nul  &
 
