@@ -24,6 +24,7 @@ echo "passed: $*"
 #################
 
 # Change to path of script:
+if ($PSScriptRoot -eq $Null) { $PSScriptRoot = Split-Path -Parent -Path $MyInvocation.MyCommand.Definition }
 cd $PSScriptRoot
 echo "passed: $args"
 
