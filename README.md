@@ -13,11 +13,11 @@ Windows:
 #### Create a single script that runs on Linux (.sh) and Windows (.ps1):
     
     #!/bin/sh  #^
-    #:Loading PowerShell:## 2>nul&@setlocal enabledelayedexpansion&echo off&(if "%0" neq "%~0" (cls))&copy "%~nx0" "%~nx0.temp.ps1" /y >nul
+    #:Loading PowerShell:## 2>nul&@setlocal enabledelayedexpansion&echo off&(if %0 == "%~0" (cls))&copy "%~nx0" "%~nx0.temp.ps1" /y >nul
     # 2>nul&powershell -exec bypass -noprofile -file "%~nx0.temp.ps1" %*&set err=!errorlevel!
-    # 2>nul&del "%~nx0.temp.ps1"&(if "%0" neq "%~0" (echo.&echo Press any key to close...&pause >nul))&exit /b !err!
+    # 2>nul&del "%~nx0.temp.ps1"&(if %0 == "%~0" (echo.&echo Press any key to close...&pause >nul))&exit /b !err!
     echo \' >/dev/null ' >$null;[void]@'
-    ### github.com/RefinedSoftwareLLC/sh.bat - v0.3 - DO NOT MODIFY THESE 6 LINES ###
+    ### github.com/RefinedSoftwareLLC/sh.bat - v0.4 - DO NOT MODIFY THESE 6 LINES ###
     
     ################
     ### .sh mode ###
