@@ -8,7 +8,7 @@ Linux:
 
 Windows:
 
-    powershell -nop -c "iex(New-Object Net.WebClient).DownloadString('https://github.com/RefinedSoftwareLLC/sh.bat/blob/master/user.sh.bat')"
+    powershell -nop -c "iex(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/RefinedSoftwareLLC/sh.bat/master/user.sh.bat')"
 
 #### Create a single script that runs on Linux (.sh) and Windows (.ps1):
     
