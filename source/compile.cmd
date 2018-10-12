@@ -9,12 +9,19 @@ cd %~dp0
 (set outfile=test.sh.bat)
 
 call :clear
-call :addFileLn .\file.prefix.bat.txt
-call :addFile .\file.prefix.bat.txt
+REM .bat bootstrap
+call :addFileLn .\bat.try.txt
+call :addFileLn .\bat.finally.txt
 call :everyLinePrefixFile .\comment.prefix.run.bat.txt
-call :prefixString "bob"
+call :prefixFile .\file.prefix.bat.txt
+REM start .ps1 skip over .sh
+call :addFileLn .\ps1.skip.try.txt
+  call :addFileLn .\sh.try.txt
+    call :addFileLn .\sh.example.txt
+  REM call :addFileLn .\sh.finally.txt
+REM end of .ps1 skip over .sh
+call :addFileLn .\ps1.skip.finally.txt
 
-REM type "%outfolder%\%outfile%"
 goto :exit
 
 :clear
