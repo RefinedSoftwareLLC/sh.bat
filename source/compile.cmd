@@ -1,26 +1,34 @@
-@ setLocal enableDelayedExpansion & echo off
+@ setLocal & echo off
+cd %~dp0
 
 REM #################
 REM ### .cmd mode ###
 REM #################
 
-cd %~dp0
 (set outfolder=..)
 (set outfile=test.sh.bat)
 
 call :clear
 REM .bat bootstrap
-call :addFileLn .\bat.try.txt
-call :addFileLn .\bat.finally.txt
-call :everyLinePrefixFile .\comment.prefix.run.bat.txt
-call :prefixFile .\file.prefix.bat.txt
+  call :addFileLn .\bat.try.txt
+  call :addFileLn .\bat.finally.txt
+  call :everyLinePrefixFile .\comment.prefix.run.bat.txt
+  call :prefixFile .\file.prefix.bat.txt
 REM start .ps1 skip over .sh
 call :addFileLn .\ps1.skip.try.txt
-  call :addFileLn .\sh.try.txt
-    call :addFileLn .\sh.example.txt
-  REM call :addFileLn .\sh.finally.txt
+  REM .sh
+    call :addFile .\sh.try.txt
+    call :addFile .\version.txt
+      call :addStringLn " ###"
+      call :addFileLn .\sh.example.txt
+    REM call :addFileLn .\sh.finally.txt
 REM end of .ps1 skip over .sh
 call :addFileLn .\ps1.skip.finally.txt
+REM .ps1
+  call :addFileLn .\ps1.constants.txt
+  call :addFileLn .\ps1.try.txt
+    call :addFileLn .\ps1.example.txt
+  call :addFileLn .\ps1.finally.txt
 
 goto :exit
 
@@ -28,7 +36,6 @@ goto :exit
 setLocal
 type nul >"%outfolder%\%outfile%"
 REM copy /b nul "%outfolder%\%outfile%"
-REM echo|(set /p=) >"%outfolder%\%outfile%"
 goto :return
 
 :toBuffer
@@ -64,19 +71,22 @@ goto :return
 :prefixFile
 setLocal
 if [%1]==[] goto :error
-copy /b "%1" + "%outfolder%\%outfile%" "%outfolder%\%outfile%" >nul
+call :toBuffer
+call :addFile "%1"
+call :addFile "%outfolder%\%buffer%"
+call :clearBuffer
 goto :return
 
 :addString
 setLocal
 if [%1]==[] goto :error
-echo|(set /p=%1) >>"%outfolder%\%outfile%"
+<nul set /p ".=%1" >>"%outfolder%\%outfile%"
 goto :return
 
 :addStringLn
 setLocal
 if [%1]==[] goto :error
-echo|(set /p=%1) >>"%outfolder%\%outfile%"
+<nul set /p ".=%1" >>"%outfolder%\%outfile%"
 (echo.)>>"%outfolder%\%outfile%"
 goto :return
 
@@ -90,11 +100,11 @@ call :clearBuffer
 goto :return
 
 :everyLinePrefixFile
-setLocal
+setLocal disabledelayedexpansion
 if [%1]==[] goto :error
 call :toBuffer
 for /f "usebackq delims=" %%a in ("%outfolder%\%buffer%") do (
-  call :addFile %1
+  call :addFile "%1"
   echo.%%a >>"%outfolder%\%outfile%"
 )
 call :clearBuffer
