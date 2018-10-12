@@ -1,0 +1,2 @@
+}finally{If($Error[0]){Write-Throw;Pause;Exit 2}Exit 0}
+### DO NOT MODIFY THIS LINE ###
