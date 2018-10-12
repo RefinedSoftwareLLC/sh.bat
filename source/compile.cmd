@@ -1,49 +1,50 @@
 @ setLocal & echo off
 cd %~dp0
 
-REM #################
-REM ### .cmd mode ###
-REM #################
+rem ###################
+rem ###  .cmd mode  ###
+rem ### Use "echo(" ###
+rem ###################
 
 (set outfolder=..)
 (set outfile=test.sh.bat)
 
 call :clear
-REM .bat bootstrap
-  call :addFileLn .\bat.try.txt
-  call :addFileLn .\bat.finally.txt
-  call :everyLinePrefixFile .\comment.prefix.run.bat.txt
-  call :prefixFile .\file.prefix.bat.txt
-REM start .ps1 skip over .sh
-call :addFileLn .\ps1.skip.try.txt
-  REM .sh
+rem .bat bootstrap
+  call :addFileLn ".\bat.try.txt"
+  call :addFileLn ".\bat.finally.txt"
+  call :everyLinePrefixFile ".\comment.prefix.run.bat.txt"
+  call :prefixFile ".\file.prefix.bat.txt"
+rem start .ps1 skip over .sh
+call :addFileLn ".\ps1.skip.try.txt"
+  rem .sh
     call :sh
-REM end of .ps1 skip over .sh
-call :addFileLn .\ps1.skip.finally.txt
-REM .ps1
+rem end of .ps1 skip over .sh
+call :addFileLn ".\ps1.skip.finally.txt"
+rem .ps1
   call :ps1
 
 goto :exit
 
 :sh
 setLocal
-  call :addFile .\sh.try.txt & call :addFile .\version.txt & call :addStringLn ". ###"
-  call :addFileLn .\sh.example.txt
-  REM call :addFileLn .\sh.finally.txt
+  call :addFile ".\sh.try.txt" & call :addFile ".\version.txt" & call :addStringLn " ###"
+  call :addFileLn ".\sh.example.txt"
+  rem call :addFileLn ".\sh.finally.txt"
 goto :return
 
 :ps1
 setLocal
-  call :addFileLn .\ps1.constants.txt
-  call :addFileLn .\ps1.try.txt
-    call :addFileLn .\ps1.example.txt
-  call :addFileLn .\ps1.finally.txt
+  call :addFileLn ".\ps1.constants.txt"
+  call :addFileLn ".\ps1.try.txt"
+    call :addFileLn ".\ps1.example.txt"
+  call :addFileLn ".\ps1.finally.txt"
 goto :return
 
 :clear
 setLocal
   type nul >"%outfolder%\%outfile%"
-  REM copy /b nul "%outfolder%\%outfile%"
+  rem copy /b nul "%outfolder%\%outfile%"
 goto :return
 
 :toBuffer
@@ -60,7 +61,7 @@ goto :return
 
 :addLn
 setLocal
-  (echo.)>>"%outfolder%\%outfile%"
+  (echo()>>"%outfolder%\%outfile%"
 goto :return
 
 :addFile
@@ -73,7 +74,7 @@ goto :return
 setLocal
   if [%1]==[] goto :error
   copy /b "%outfolder%\%outfile%" + "%1" "%outfolder%\%outfile%" >nul
-  (echo.)>>"%outfolder%\%outfile%"
+  (echo()>>"%outfolder%\%outfile%"
 goto :return
 
 :prefixFile
@@ -88,21 +89,21 @@ goto :return
 :addString
 setLocal
   if [%1]==[] goto :error
-  <nul set /p ".=%1" >>"%outfolder%\%outfile%"
+  echo addString incorrectly adds newline
+  call :addStringLn "%1"
 goto :return
 
 :addStringLn
 setLocal
   if [%1]==[] goto :error
-  <nul set /p ".=%1" >>"%outfolder%\%outfile%"
-  (echo.)>>"%outfolder%\%outfile%"
+  (echo(%~1)>>"%outfolder%\%outfile%"
 goto :return
 
 :prefixString
 setLocal
   if [%1]==[] goto :error
   call :toBuffer
-  echo|(set /p=%1) >>"%outfolder%\%outfile%"
+  call :addString "%1"
   call :addFile "%outfolder%\%buffer%"
   call :clearBuffer
 goto :return
@@ -113,14 +114,14 @@ if [%1]==[] goto :error
   call :toBuffer
   for /f "usebackq delims=" %%a in ("%outfolder%\%buffer%") do (
     call :addFile "%1"
-    echo.%%a >>"%outfolder%\%outfile%"
+    echo(%%a >>"%outfolder%\%outfile%"
   )
   call :clearBuffer
 goto :return
 
-REM ################
-REM ### .cmd end ###
-REM ################
+rem ################
+rem ### .cmd end ###
+rem ################
 
 goto :exit
 
@@ -132,7 +133,7 @@ setLocal
 goto :return
 
 :error
-echo.Error: %0 %*
+echo(Error: %0 %*
 endlocal & (set return=)
 if [%1]==[] exit /b 1
 exit /b %1
