@@ -1,6 +1,35 @@
 @ setLocal & echo off
 cd %~dp0
 
+(set test=  ..)
+
+setlocal enableextensions enabledelayedexpansion
+
+set "count=0"
+for %%a in (%test%) do (
+    set /a "count+=1"
+    <nul set /p ".=working on file !count!"
+)
+setlocal disabledelayedexpansion
+
+(echo(%test%)
+echo|set /p.=%test%
+echo|set /p.="%test%"
+0>NUL set /p.=%test%
+0>NUL set /p.="%test%"
+<NUL set /p.=%test%
+<NUL set /p.="%test%"
+<NUL set /p.=%test%|echo
+<NUL set /p.="%test%"|echo
+
+call :addStringLn ".  ###  ."
+call :addString "  ### " & call :addStringLn " ###  ."
+call :prefixString ".  ### "
+
+(echo()
+(echo(done)
+goto :exit
+
 rem ###################
 rem ###  .cmd mode  ###
 rem ### Use "echo(" ###
@@ -11,10 +40,9 @@ rem ###################
 
 call :clear
 rem .bat bootstrap
-  call :addFileLn ".\bat.try.txt"
-  call :addFileLn ".\bat.finally.txt"
-  call :everyLinePrefixFile ".\comment.prefix.run.bat.txt"
-  call :prefixFile ".\file.prefix.bat.txt"
+  call :prefixFile ".\file.prefix.txt"
+  call :addPrefixFileToEveryLineOfFile ".\comment.prefix.run.bat.txt" ".\bat.try.txt"
+  call :addPrefixFileToEveryLineOfFile ".\comment.prefix.run.bat.txt" ".\bat.finally.txt"
 rem start .ps1 skip over .sh
 call :addFileLn ".\ps1.skip.try.txt"
   rem .sh
@@ -40,6 +68,10 @@ setLocal
     call :addFileLn ".\ps1.example.txt"
   call :addFileLn ".\ps1.finally.txt"
 goto :return
+
+rem ###############
+rem ### library ###
+rem ###############
 
 :clear
 setLocal
@@ -73,8 +105,8 @@ goto :return
 :addFileLn
 setLocal
   if [%1]==[] goto :error
-  copy /b "%outfolder%\%outfile%" + "%1" "%outfolder%\%outfile%" >nul
-  (echo()>>"%outfolder%\%outfile%"
+  call :addFile "%1"
+  call :addLn "%1"
 goto :return
 
 :prefixFile
@@ -82,8 +114,15 @@ setLocal
   if [%1]==[] goto :error
   call :toBuffer
   call :addFile "%1"
+  if not [%2]==[] call :addLn "%1"
   call :addFile "%outfolder%\%buffer%"
   call :clearBuffer
+goto :return
+
+:prefixFileLN
+setLocal
+  if [%1]==[] goto :error
+  call :prefixFile "%1" ""
 goto :return
 
 :addString
@@ -91,6 +130,18 @@ setLocal
   if [%1]==[] goto :error
   echo addString incorrectly adds newline
   call :addStringLn "%1"
+  REM set temp=%~1
+  REM (echo(%temp%)
+  REM <NUL set /p.="   testing  "
+  rem echo|set /p.="   testing  "
+  rem (type %temp%)
+  rem echo|(set /p.=%temp: = %)
+  rem (echo(%~1)
+  rem echo|(set /p.=%1:#=##%)
+  rem echo|(set /p.= %~1) >>"%outfolder%\%outfile%"
+  rem (echo(%~1)>>"%outfolder%\%outfile%"
+  rem call :addFile "%1"
+  rem del "%outfolder%\%buffer%" >nul 2>&1
 goto :return
 
 :addStringLn
@@ -104,8 +155,15 @@ setLocal
   if [%1]==[] goto :error
   call :toBuffer
   call :addString "%1"
+  if not [%2]==[] call :addLn "%1"
   call :addFile "%outfolder%\%buffer%"
   call :clearBuffer
+goto :return
+
+:prefixStringLN
+setLocal
+  if [%1]==[] goto :error
+  call :prefixString "%1" ""
 goto :return
 
 :everyLinePrefixFile
@@ -119,9 +177,32 @@ if [%1]==[] goto :error
   call :clearBuffer
 goto :return
 
-rem ################
-rem ### .cmd end ###
-rem ################
+:everyLinePrefixString
+setLocal disabledelayedexpansion
+if [%1]==[] goto :error
+  call :toBuffer
+  for /f "usebackq delims=" %%a in ("%outfolder%\%buffer%") do (
+    call :addString "%1"
+    echo(%%a >>"%outfolder%\%outfile%"
+  )
+  call :clearBuffer
+goto :return
+
+:addPrefixFileToEveryLineOfFile
+setLocal
+  if [%1]==[] goto :error
+  if [%2]==[] goto :error
+goto :return
+
+:addPrefixStringToEveryLineOfFile
+setLocal
+  if [%1]==[] goto :error
+  if [%2]==[] goto :error
+goto :return
+
+rem ##############
+rem ### engine ###
+rem ##############
 
 goto :exit
 
