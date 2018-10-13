@@ -38,6 +38,8 @@ rem ###################
 (set outfolder=..)
 (set outfile=test.sh.bat)
 
+call :newVersion ".\version.txt"
+
 call :clear
 rem .bat bootstrap
   call :prefixFile ".\file.prefix.txt"
@@ -72,6 +74,30 @@ goto :return
 rem ###############
 rem ### library ###
 rem ###############
+
+
+
+:newVersion
+setLocal EnableDelayedExpansion
+  if [%1]==[] goto :error
+  if [%2]==[] (
+    if not exist "%1" (echo(0.0.0.0)>"%1"
+    set /p az=<"%1"
+    rem %az%    =0.0.0.5
+    call :newVersion "%1" "!az!"
+    goto :return
+  )
+  rem %2      =0.0.0.5
+  rem %~n2    =0.0.0
+  rem %~x2    =.5
+  set z=%~x2
+  set z=%z:~1%
+  set /a z=z+1
+  rem %z%     =6
+  set az=%~n2.%z%
+  rem %~n2.%z%=0.0.0.6
+  (echo(%az%)>"%1"
+goto :return
 
 :clear
 setLocal
@@ -192,12 +218,24 @@ goto :return
 setLocal
   if [%1]==[] goto :error
   if [%2]==[] goto :error
+  call :toBuffer
+  for /f "usebackq delims=" %%a in ("%2") do (
+    call :addFile "%1"
+    echo(%%a >>"%outfolder%\%outfile%"
+  )
+  call :clearBuffer
 goto :return
 
 :addPrefixStringToEveryLineOfFile
 setLocal
   if [%1]==[] goto :error
   if [%2]==[] goto :error
+  call :toBuffer
+  for /f "usebackq delims=" %%a in ("%2") do (
+    call :addString "%1"
+    echo(%%a >>"%outfolder%\%outfile%"
+  )
+  call :clearBuffer
 goto :return
 
 rem ##############
