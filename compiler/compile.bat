@@ -199,11 +199,12 @@ goto :return
 :prefixFile
 setLocal
   if [%1]==[] goto :error
+  if not [%2]==[] if not [%2]==[Ln] goto :error
   if not exist "%~1" goto :error
   if not [%3]==[] goto :error
   call :toBuffer
   call :addFile "%~1"
-  if not [%2]==[] call :addLn
+  if [%2]==[Ln] call :addLn
   call :addFile "%outfolder%\%buffer%"
   call :clearBuffer
 goto :return
@@ -213,7 +214,7 @@ setLocal
   if [%1]==[] goto :error
   if not exist "%~1" goto :error
   if not [%2]==[] goto :error
-  call :prefixFile "%~1" ""
+  call :prefixFile "%~1" Ln
 goto :return
 
 :addString
@@ -249,10 +250,11 @@ goto :return
 :prefixString
 setLocal
   if [%1]==[] goto :error
+  if not [%2]==[] if not [%2]==[Ln] goto :error
   if not [%3]==[] goto :error
   call :toBuffer
   call :addString "%~1"
-  if not [%2]==[] call :addLn
+  if [%2]==[Ln] call :addLn
   call :addFile "%outfolder%\%buffer%"
   call :clearBuffer
 goto :return
@@ -261,7 +263,7 @@ goto :return
 setLocal
   if [%1]==[] goto :error
   if not [%2]==[] goto :error
-  call :prefixString "%~1" ""
+  call :prefixString "%~1" Ln
 goto :return
 
 :everyLinePrefixFile
