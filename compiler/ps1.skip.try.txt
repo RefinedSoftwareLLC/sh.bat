@@ -1,1 +1,1 @@
-echo \' >/dev/null ' >$null;[void]@'
+set .=\`';[void]@'
