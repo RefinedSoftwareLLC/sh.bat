@@ -1,106 +1,92 @@
-@ (set "return=errorReturn") & setLocal enableDelayedExpansion & setLocal & echo off
-call :init
-pushd %~dp0
-
-REM (set "outfolder=..")
-REM (set "outfile=test.sh.bat")
-
-REM call :newVersionFile ".\version.txt"
-
-REM call :clear
-REM call :prefixFileLn ".\file.prefix.txt"
-REM call :addFile ".\bat.exit.txt"
-REM call :prefixFile ".\file.prefix.txt"
-
-REM call :addStringLn ".  ###  ."
-REM call :addString "  ### " & call :addStringLn " ###  ."
-REM call :prefixString ".  ### "
-
-REM call :typeLn
-REM call :typeString "done"
-REM start notepad ..\test.sh.bat
-REM goto :exit
+@ echo off & goto :init
+:start
 
 REM ###################
 REM ###  .bat mode  ###
 REM ### Use "echo(" ###
 REM ###################
 
-(set "outfolder=..")
-(set "sourcefolder=%outfolder%\source")
-
-call :newVersionFile ".\version.txt"
-
+echo(
+echo(compile :start
+echo(
+call :newVersionFile "compiler\version.txt"
 call :compileAll "example"
+
+start notepad "example.sh.bat"
 goto :exit
 
 :compileAll
-setLocal disableDelayedExpansion
-  if ["%~1"]==[""] goto :error
-  if not ["%~2"]==[""] goto :error
-  call :newVersionFile "%sourcefolder%\%~1.version.txt"
-  call :compileUser "%~1"
-  call :compileAdmin "%~1"
-  start notepad "%outfolder%\%~1.sh.bat"
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not ["%~2"]==[""] goto :errorReturn
+  call :newVersionFile "%sourceFolder%\!a1!.version.txt"
+  call :compileUser "!a1!"
+  call :compileAdmin "!a1!"
+  
 goto :voidReturn
 
 :compileUser
-setLocal disableDelayedExpansion
-  if ["%~1"]==[""] goto :error
-  if not ["%~2"]==[""] goto :error
-  (set "outfile=%~1.sh.bat")
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not ["%~2"]==[""] goto :errorReturn
+  call :setOutFile "!a1!.sh.bat"
   call :clear
   REM .bat bootstrap
-    call :prefixFileLn ".\file.prefix.txt"
-    call :addPrefixFileHeadWithEveryLineOfFile ".\comment.prefix.run.bat.txt" ".\bat.try.txt"
-    call :addPrefixFileHeadWithEveryLineOfFile ".\comment.prefix.run.bat.txt" ".\bat.finally.txt"
+    call :prefixFileLn "compiler\file.prefix.txt"
+    call :addPrefixFileHeadWithEveryLineOfFile "compiler\comment.prefix.run.bat.txt" "compiler\bat.try.txt"
+    call :addPrefixFileHeadWithEveryLineOfFile "compiler\comment.prefix.run.bat.txt" "compiler\bat.finally.txt"
   REM start .ps1 skip over .sh
-  call :addFileLn ".\ps1.skip.try.txt"
+  call :addFileLn "compiler\ps1.skip.try.txt"
     REM .sh
-      call :sh "%~1"
+      call :sh "!a1!"
   REM end of .ps1 skip over .sh
-  call :addFileLn ".\ps1.skip.finally.txt"
+  call :addFileLn "compiler\ps1.skip.finally.txt"
   REM .ps1
-    call :ps1 "%~1"
+    call :ps1 "!a1!"
 goto :voidReturn
 
 :compileAdmin
-setLocal disableDelayedExpansion
-  if ["%~1"]==[""] goto :error
-  if not ["%~2"]==[""] goto :error
-  (set "outfile=%~1.admin.sh.bat")
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not ["%~2"]==[""] goto :errorReturn
+  call :setOutFile "!a1!.admin.sh.bat"
   call :clear
   REM .bat bootstrap
-    call :prefixFile ".\file.prefix.txt"
-    call :addPrefixFileHeadWithEveryLineOfFile ".\comment.prefix.run.bat.txt" ".\bat.try.txt"
-    call :addPrefixFileHeadWithEveryLineOfFile ".\comment.prefix.run.bat.txt" ".\bat.finally.txt"
+    call :prefixFile "compiler\file.prefix.txt"
+    call :addPrefixFileHeadWithEveryLineOfFile "compiler\comment.prefix.run.bat.txt" "compiler\bat.try.txt"
+    call :addPrefixFileHeadWithEveryLineOfFile "compiler\comment.prefix.run.bat.txt" "compiler\bat.finally.txt"
   REM start .ps1 skip over .sh
-  call :addFileLn ".\ps1.skip.try.txt"
+  call :addFileLn "compiler\ps1.skip.try.txt"
     REM .sh
-      call :sh "%~1"
+      call :sh "!a1!"
   REM end of .ps1 skip over .sh
-  call :addFileLn ".\ps1.skip.finally.txt"
+  call :addFileLn "compiler\ps1.skip.finally.txt"
   REM .ps1
-    call :ps1 "%~1"
+    call :ps1 "!a1!"
 goto :voidReturn
 
 :sh
-setLocal disableDelayedExpansion
-  if ["%~1"]==[""] goto :error
-  if not ["%~2"]==[""] goto :error
-  call :addFile ".\sh.try.txt" & call :addFileHead ".\version.txt" & call :addStringLn " ###"
-    call :addFileLn "%sourcefolder%\%~1.sh.txt"
-  REM call :addFileLn ".\sh.finally.txt"
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not ["%~2"]==[""] goto :errorReturn
+  call :addFile "compiler\sh.try.txt" & call :addFileHead "compiler\version.txt"
+  REM call :addStringLn " ###"
+    setLocal disableDelayedExpansion
+      >>"%outFile%" (echo( ###)
+    endLocal
+  REM call :addStringLn
+    call :addFileLn "%sourceFolder%\!a1!.sh.txt"
+  REM call :addFileLn "compiler\sh.finally.txt"
 goto :voidReturn
 
 :ps1
-setLocal disableDelayedExpansion
-  if ["%~1"]==[""] goto :error
-  if not ["%~2"]==[""] goto :error
-  call :addFileLn ".\ps1.constants.txt"
-  call :addFileLn ".\ps1.try.txt"
-    call :addFileLn "%sourcefolder%\%~1.ps1.txt"
-  call :addFileLn ".\ps1.finally.txt"
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not ["%~2"]==[""] goto :errorReturn
+  call :addFileLn "compiler\ps1.constants.txt"
+  call :addFileLn "compiler\ps1.try.txt"
+    call :addFileLn "%sourceFolder%\!a1!.ps1.txt"
+  call :addFileLn "compiler\ps1.finally.txt"
 goto :voidReturn
 
 REM ###############
@@ -108,17 +94,19 @@ REM ### library ###
 REM ###############
 
 :newVersionFile
-setLocal enableDelayedExpansion
-  if ["%~1"]==[""] goto :error
-  if not ["%~3"]==[""] goto :error
-  if ["%~2"]==[""] (
-    if not exist "%~1" call :newFileFromString "%~1" "0.0.0.0"
-    call :exclamationsReturnFileFirstLine "%~1"
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not ["%~3"]==[""] goto :errorReturn
+  set "a2=%~2" & if ["%~2"]==[""] (
+    (set "return=")
+    if not exist "!a1!" call :newFileFromString "!a1!" "0.0.0.0"
+    call :exclamationsReturnFileFirstLine "!a1!"
     REM !return!=0.0.0.5
-    call :newVersionFile "%~1" "!return!"
+    if ["!return!"]==[""] goto :errorReturn
+    if not ["!return!"]==[""] call :newVersionFile "!a1!" "!return!"
     goto :voidReturn
   )
-  REM %~2       =0.0.0.5
+  REM !a2!      =0.0.0.5
   REM %~n2      =0.0.0
   REM %~x2      =.5
   (set "z=%~x2")
@@ -126,247 +114,324 @@ setLocal enableDelayedExpansion
   (set /a "z=z+1")
   REM %z%       =6
   REM %~n2.%z%  =0.0.0.6
-  call :newFileLnFromString "%~1" "%~n2.%z%"
+  call :newFileLnFromString "!a1!" "%~n2.%z%"
 goto :voidReturn
 
 :clear
-setLocal disableDelayedExpansion
-  if not ["%~1"]==[""] goto :error
-  >"%outfolder%\%outfile%" (type nul)
-  REM copy /b nul "%outfolder%\%outfile%"
+setLocal
+  if not ["%~1"]==[""] goto :errorReturn
+  >"%outFile%" (type nul)
+  REM copy /b nul "%outFile%"
 goto :voidReturn
 
 :toBuffer
-setLocal disableDelayedExpansion
-  if not ["%~1"]==[""] goto :error
-  call :delFile "%outfolder%\%outfile%1.temp"
-  ren "%outfolder%\%outfile%" "%outfile%1.temp"
+setLocal
+  if not ["%~1"]==[""] goto :errorReturn
+  call :deleleFile "buffer.temp"
+  call :renameFileToFile "%outFile%" ".\buffer.temp"
   call :clear
-endlocal & (set "buffer=%outfile%1.temp") & exit /b 0
+goto :voidReturn
 
 :clearBuffer
-setLocal disableDelayedExpansion
-  if not ["%~1"]==[""] goto :error
-  call :delFile "%outfolder%\%buffer%"
+setLocal
+  if not ["%~1"]==[""] goto :errorReturn
+  call :deleleFile "buffer.temp"
 goto :voidReturn
 
-:addSp
-setLocal disableDelayedExpansion
-  if not ["%~1"]==[""] goto :error
-  call :addString " "
-goto :voidReturn
+REM :addSp
+REM setLocal
+  REM if not ["%~1"]==[""] goto :errorReturn
+  REM call :addString " "
+REM goto :voidReturn
 
 :addLn
-setLocal disableDelayedExpansion
-  if not ["%~1"]==[""] goto :error
-  >>"%outfolder%\%outfile%" (echo()
+setLocal
+  if not ["%~1"]==[""] goto :errorReturn
+  setLocal disableDelayedExpansion
+    >>"%outFile%" (echo()
+  endLocal
 goto :voidReturn
 
 :addFile
-setLocal disableDelayedExpansion
-  if ["%~1"]==[""] goto :error
-  if not exist "%~1" goto :error
-  if not ["%~2"]==[""] goto :error
-  copy /b "%outfolder%\%outfile%" + "%~1" "%outfolder%\%outfile%" >nul
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not exist "!a1!" goto :errorReturn
+  if not ["%~2"]==[""] goto :errorReturn
+  copy /b "%outFile%" + "!a1!" "%outFile%" >nul
 goto :voidReturn
 
 :addFileHead
-setLocal enableDelayedExpansion
-  if ["%~1"]==[""] goto :error
-  if not exist "%~1" goto :error
-  if not ["%~2"]==[""] goto :error
-  call :exclamationsReturnFileFirstLine "%~1"
-  call :addStringFoundInFile "!return!" "%~1"
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not exist "!a1!" goto :errorReturn
+  if not ["%~2"]==[""] goto :errorReturn
+  call :exclamationsReturnFileFirstLine "!a1!"
+  REM call :addString "!return!"
+    if [%sub%]==[] call :setSub
+    >type.temp (echo(!return!!sub!)
+    copy type.temp /a type2.temp /b >nul
+    >>"%outFile%" (type type2.temp)
+    del type.temp type2.temp
+  REM end :addString
+    
 goto :voidReturn
 
-:addStringFoundInFile
-setLocal disableDelayedExpansion
-  if ["%~1"]==[""] goto :error
-  if ["%~2"]==[""] goto :error
-  if not exist "%~2" goto :error
-  if not ["%~3"]==[""] goto :error
-  >>"%outfolder%\%outfile%" (findstr /b /C:"%~1" "%~2")
-goto :voidReturn
-
-:addStringFoundInFileLn
-setLocal disableDelayedExpansion
-  if ["%~1"]==[""] goto :error
-  if ["%~2"]==[""] goto :error
-  if not exist "%~2" goto :error
-  if not ["%~3"]==[""] goto :error
-  call :addStringFoundInFile "%~1" "%~2"
-  call :addLn
-goto :voidReturn
+REM :addStringFoundInFile
+REM setLocal
+  REM set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  REM set "a2=%~2" & if ["%~2"]==[""] goto :errorReturn
+  REM if not exist "!a2!" goto :errorReturn
+  REM if not ["%~3"]==[""] goto :errorReturn
+  REM >>"%outFile%" (findstr /b /C:"!a1!" "!a2!")
+REM goto :voidReturn
 
 :addFileLn
-setLocal disableDelayedExpansion
-  if ["%~1"]==[""] goto :error
-  if not exist "%~1" goto :error
-  if not ["%~2"]==[""] goto :error
-  call :addFile "%~1"
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not exist "!a1!" goto :errorReturn
+  if not ["%~2"]==[""] goto :errorReturn
+  call :addFile "!a1!"
   call :addLn
 goto :voidReturn
 
 :addFileHeadLn
-setLocal disableDelayedExpansion
-  if ["%~1"]==[""] goto :error
-  if not exist "%~1" goto :error
-  if not ["%~2"]==[""] goto :error
-  call :addFileHead "%~1"
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not exist "!a1!" goto :errorReturn
+  if not ["%~2"]==[""] goto :errorReturn
+  call :addFileHead "!a1!"
   call :addLn
 goto :voidReturn
 
 :prefixFile
-setLocal disableDelayedExpansion
-  if ["%~1"]==[""] goto :error
-  if not ["%~2"]==[""] if not [%2]==[Ln] goto :error
-  if not exist "%~1" goto :error
-  if not ["%~3"]==[""] goto :error
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not exist "!a1!" goto :errorReturn
+  set "a2=%~2" & if not ["%~2"]==[""] if not ["!a2!"]==["ln"] goto :errorReturn
+  if not ["%~3"]==[""] goto :errorReturn
   call :toBuffer
-  call :addFile "%~1"
-  if [%2]==[Ln] call :addLn
-  call :addFile "%outfolder%\%buffer%"
+  call :addFile "!a1!"
+  if ["!a2!"]==["ln"] call :addLn
+  call :addFile "buffer.temp"
   call :clearBuffer
 goto :voidReturn
 
 :prefixFileHead
-setLocal disableDelayedExpansion
-  if ["%~1"]==[""] goto :error
-  if not ["%~2"]==[""] if not [%2]==[Ln] goto :error
-  if not exist "%~1" goto :error
-  if not ["%~3"]==[""] goto :error
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not exist "!a1!" goto :errorReturn
+  set "a2=%~2" & if not ["%~2"]==[""] if not ["!a2!"]==["ln"] goto :errorReturn
+  if not ["%~3"]==[""] goto :errorReturn
   call :toBuffer
-  call :addFileHead "%~1"
-  if [%2]==[Ln] call :addLn
-  call :addFile "%outfolder%\%buffer%"
+  call :addFileHead "!a1!"
+  if ["!a2!"]==["ln"] call :addLn
+  call :addFile "buffer.temp"
   call :clearBuffer
 goto :voidReturn
 
 :prefixFileLn
-setLocal disableDelayedExpansion
-  if ["%~1"]==[""] goto :error
-  if not exist "%~1" goto :error
-  if not ["%~2"]==[""] goto :error
-  call :prefixFile "%~1" Ln
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not exist "!a1!" goto :errorReturn
+  if not ["%~2"]==[""] goto :errorReturn
+  call :prefixFile "!a1!" "ln"
 goto :voidReturn
 
 :prefixFileHeadLn
-setLocal disableDelayedExpansion
-  if ["%~1"]==[""] goto :error
-  if not exist "%~1" goto :error
-  if not ["%~2"]==[""] goto :error
-  call :prefixFileHead "%~1" Ln
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not exist "!a1!" goto :errorReturn
+  if not ["%~2"]==[""] goto :errorReturn
+  call :prefixFileHead "!a1!" "ln"
 goto :voidReturn
 
-:addString
-setLocal enableDelayedExpansion
-  if ["%~1"]==[""] goto :error
-  if not ["%~2"]==[""] goto :error
-  if [%sub%]==[] call :setSub
-  >type.temp (echo(%~1!sub!)
-  copy type.temp /a type2.temp /b >nul
-  >>"%outfolder%\%outfile%" (type type2.temp)
-  del type.temp type2.temp
-goto :voidReturn
+REM :addVariable
+REM setLocal
+  REM set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  REM if not ["%~2"]==[""] goto :errorReturn
+  REM if [%sub%]==[] call :setSub
+  REM >type.temp (echo(!%a1%!!sub!)
+  REM copy type.temp /a type2.temp /b >nul
+  REM >>"%outFile%" (type type2.temp)
+  REM del type.temp type2.temp
+REM goto :voidReturn
+
+REM :addString
+REM setLocal
+  REM set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  REM if not ["%~2"]==[""] goto :errorReturn
+  REM if [%sub%]==[] call :setSub
+  REM >type.temp (echo(!a1!!sub!)
+  REM copy type.temp /a type2.temp /b >nul
+  REM >>"%outFile%" (type type2.temp)
+  REM del type.temp type2.temp
+REM goto :voidReturn
+
+REM :addVariableLn
+REM setlocal
+  REM set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  REM if not ["%~2"]==[""] goto :errorReturn
+  REM setLocal disableDelayedExpansion
+    REM >>"%outFile%" (echo(!%a1%!)
+  REM endLocal
+REM goto :voidReturn
 
 :addStringLn
-  if ["%~1"]==[""] goto :error
-  if not ["%~2"]==[""] goto :error
-  >>"%outfolder%\%outfile%" (echo(%~1)
-(set "return=") & exit /b 0
+setlocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not ["%~2"]==[""] goto :errorReturn
+  setLocal disableDelayedExpansion
+    >>"%outFile%" (echo(%~1)
+  endLocal
+goto :voidReturn
 
 :prefixString
-setLocal disableDelayedExpansion
-  if ["%~1"]==[""] goto :error
-  if not ["%~2"]==[""] if not [%2]==[Ln] goto :error
-  if not ["%~3"]==[""] goto :error
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  set "a2=%~2" & if not ["%~2"]==[""] if not ["!a2!"]==["ln"] goto :errorReturn
+  if not ["%~3"]==[""] goto :errorReturn
   call :toBuffer
-  call :addString "%~1"
-  if [%2]==[Ln] call :addLn
-  call :addFile "%outfolder%\%buffer%"
+  REM call :addString "!a1!"
+    if [%sub%]==[] call :setSub
+    >type.temp (echo(!a1!!sub!)
+    copy type.temp /a type2.temp /b >nul
+    >>"%outFile%" (type type2.temp)
+    del type.temp type2.temp
+  REM end :addString
+  
+  if ["!a2!"]==["ln"] call :addLn
+  call :addFile "buffer.temp"
   call :clearBuffer
 goto :voidReturn
 
 :prefixStringLn
-setLocal disableDelayedExpansion
-  if ["%~1"]==[""] goto :error
-  if not ["%~2"]==[""] goto :error
-  call :prefixString "%~1" Ln
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not ["%~2"]==[""] goto :errorReturn
+  call :prefixString "!a1!" "ln"
 goto :voidReturn
 
 :everyLinePrefixFile
-setLocal disabledelayedexpansion
-  if ["%~1"]==[""] goto :error
-  if not exist "%~1" goto :error
-  if not ["%~2"]==[""] goto :error
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not exist "!a1!" goto :errorReturn
+  if not ["%~2"]==[""] goto :errorReturn
   call :toBuffer
-  for /f "usebackq delims=" %%a in ("%outfolder%\%buffer%") do (
-    call :addFile "%~1"
-    >>"%outfolder%\%outfile%" (echo(%%a)
+  for /f "usebackq delims=" %%a in ("buffer.temp") do (set "line=%%a"
+    call :addFile "!a1!"
+    REM call :addString "!line!"
+      if [%sub%]==[] call :setSub
+      >type.temp (echo(!line!!sub!)
+      copy type.temp /a type2.temp /b >nul
+      >>"%outFile%" (type type2.temp)
+      del type.temp type2.temp
+    REM end :addString
   )
   call :clearBuffer
 goto :voidReturn
 
 :everyLinePrefixFileHead
-setLocal disabledelayedexpansion
-  if ["%~1"]==[""] goto :error
-  if not exist "%~1" goto :error
-  if not ["%~2"]==[""] goto :error
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not exist "!a1!" goto :errorReturn
+  if not ["%~2"]==[""] goto :errorReturn
   call :toBuffer
-  for /f "usebackq delims=" %%a in ("%outfolder%\%buffer%") do (
-    call :addFileHead "%~1"
-    >>"%outfolder%\%outfile%" (echo(%%a)
+  for /f "usebackq delims=" %%a in ("buffer.temp") do (set "line=%%a"
+    call :addFileHead "!a1!"
+    REM call :addString "!line!"
+      if [%sub%]==[] call :setSub
+      >type.temp (echo(!line!!sub!)
+      copy type.temp /a type2.temp /b >nul
+      >>"%outFile%" (type type2.temp)
+      del type.temp type2.temp
+    REM end :addString
   )
   call :clearBuffer
 goto :voidReturn
 
 :everyLinePrefixString
-setLocal disabledelayedexpansion
-  if ["%~1"]==[""] goto :error
-  if not ["%~2"]==[""] goto :error
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not ["%~2"]==[""] goto :errorReturn
   call :toBuffer
-  for /f "usebackq delims=" %%a in ("%outfolder%\%buffer%") do (
-    call :addString "%~1"
-    >>"%outfolder%\%outfile%" (echo(%%a)
+  for /f "usebackq delims=" %%a in ("buffer.temp") do (set "line=%%a"
+    REM call :addString "!a1!"
+      if [%sub%]==[] call :setSub
+      >type.temp (echo(!a1!!sub!)
+      copy type.temp /a type2.temp /b >nul
+      >>"%outFile%" (type type2.temp)
+      del type.temp type2.temp
+    REM end :addString
+    REM call :addString "!line!"
+      if [%sub%]==[] call :setSub
+      >type.temp (echo(!line!!sub!)
+      copy type.temp /a type2.temp /b >nul
+      >>"%outFile%" (type type2.temp)
+      del type.temp type2.temp
+    REM end :addString
   )
   call :clearBuffer
 goto :voidReturn
 
 :addPrefixFileWithEveryLineOfFile
-setLocal disableDelayedExpansion
-  if ["%~1"]==[""] goto :error
-  if not exist "%~1" goto :error
-  if ["%~2"]==[""] goto :error
-  if not exist "%~2" goto :error
-  if not ["%~3"]==[""] goto :error
-  for /f "usebackq delims=" %%a in ("%~2") do (
-    call :addFile "%~1"
-    >>"%outfolder%\%outfile%" (echo(%%a)
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not exist "!a1!" goto :errorReturn
+  set "a2=%~2" & if ["%~2"]==[""] goto :errorReturn
+  if not exist "!a2!" goto :errorReturn
+  if not ["%~3"]==[""] goto :errorReturn
+  for /f "usebackq delims=" %%a in ("!a2!") do (set "line=%%a"
+    call :addFile "!a1!"
+    REM call :addString "!line!"
+      if [%sub%]==[] call :setSub
+      >type.temp (echo(!line!!sub!)
+      copy type.temp /a type2.temp /b >nul
+      >>"%outFile%" (type type2.temp)
+      del type.temp type2.temp
+    REM end :addString
   )
 goto :voidReturn
 
 :addPrefixFileHeadWithEveryLineOfFile
-setLocal disableDelayedExpansion
-  if ["%~1"]==[""] goto :error
-  if not exist "%~1" goto :error
-  if ["%~2"]==[""] goto :error
-  if not exist "%~2" goto :error
-  if not ["%~3"]==[""] goto :error
-  for /f "usebackq delims=" %%a in ("%~2") do (
-    call :addFileHead "%~1"
-    >>"%outfolder%\%outfile%" (echo(%%a)
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not exist "!a1!" goto :errorReturn
+  set "a2=%~2" & if ["%~2"]==[""] goto :errorReturn
+  if not exist "!a2!" goto :errorReturn
+  if not ["%~3"]==[""] goto :errorReturn  
+  for /f "usebackq delims=" %%a in ("!a2!") do (set "line=%%a"
+    REM call :typeFile "!a1!"
+    call :addFileHead "^!a1^!"
+    REM call :addStringLn "^!line^!"
+      setLocal disableDelayedExpansion
+        >>"%outFile%" (echo(%%a)
+      endLocal
+    REM call :addStringLn
   )
+  
 goto :voidReturn
 
 :addPrefixStringWithEveryLineOfFile
-setLocal disableDelayedExpansion
-  if ["%~1"]==[""] goto :error
-  if ["%~2"]==[""] goto :error
-  if not exist "%~2" goto :error
-  if not ["%~3"]==[""] goto :error
-  for /f "usebackq delims=" %%a in ("%~2") do (
-    call :addString "%~1"
-    >>"%outfolder%\%outfile%" (echo(%%a)
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  set "a2=%~2" & if ["%~2"]==[""] goto :errorReturn
+  if not exist "!a2!" goto :errorReturn
+  if not ["%~3"]==[""] goto :errorReturn
+  for /f "usebackq delims=" %%a in ("!a2!") do (set "line=%%a"
+    REM call :addString "!a1!"
+      if [%sub%]==[] call :setSub
+      >type.temp (echo(!a1!!sub!)
+      copy type.temp /a type2.temp /b >nul
+      >>"%outFile%" (type type2.temp)
+      del type.temp type2.temp
+    REM end :addString
+    REM call :addString "!line!"
+      if [%sub%]==[] call :setSub
+      >type.temp (echo(!line!!sub!)
+      copy type.temp /a type2.temp /b >nul
+      >>"%outFile%" (type type2.temp)
+      del type.temp type2.temp
+    REM end :addString
   )
 goto :voidReturn
 
@@ -377,150 +442,286 @@ REM ##############
 goto :exit
 
 :example
-setLocal disableDelayedExpansion
-  if ["%~1"]==[""] goto :error
-  if not ["%~2"]==[""] goto :error
-  (set "var1=%~1")
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not ["%~2"]==[""] goto :errorReturn
+  (set "var1=!a1!")
   (set "return=%var1% world")
 goto :voidReturn
 
 :init
-setLocal disableDelayedExpansion
-  call :setSub
-  call :setLf
-goto :voidReturn
+setLocal enableDelayedExpansion
+(set "setLocal=1")
+(set "a1=errorA1") & (set "a2=errorA2") & (set "a3=errorA3") & (set "a4=errorA4") & (set "a5=errorA5") & (set "a6=errorA6") & (set "a7=errorA7") & (set "a8=errorA8") & (set "a9=errorA9")
+(set "export=errorExport")
+(set "return=errorReturn")
+(set "lf=errorLf")
+setLocal
+(set /a "setLocal=setLocal+1")
+REM Above 2 setLocals are required - do not remove
+pushd %~dp0
+call :setOutFolder ".."
+(set "sourceFolder=.\source")
+call :setLf
+call :setSub
+if not ["%~1"]==[""] (echo(Error: %0 %*)
+
+REM start starting
+call :start
+REM start exited
+
+echo(compile :exit
+if not ["%setLocal%"]==["2"] (
+  echo(setLocal depth %setLocal% but should be 2
+  exit /b 1
+)
+exit /b 0
+
+:setOutFolder
+REM no setLocal, a1, a2, :return
+  if ["%~1"]==[""] (
+    (echo(Error: %0 %*)
+    exit /b 1
+  )
+  if not ["%~2"]==[""] (
+    (echo(Error: %0 %*)
+    exit /b 1
+  )
+  popd
+  pushd "%~dp0\%~1"
+exit /b 0
+
+:setOutFile
+REM no setLocal, a1, a2, :return
+  if ["%~1"]==[""] (
+    (echo(Error: %0 %*)
+    exit /b 1
+  )
+  if not ["%~2"]==[""] (
+    (echo(Error: %0 %*)
+    exit /b 1
+  )
+  (set "outFile=%~1")
+exit /b 0
 
 :typeString
-setLocal enableDelayedExpansion
-  if ["%~1"]==[""] goto :error
-  if not ["%~2"]==[""] goto :error
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not ["%~2"]==[""] goto :errorReturn
   if [%sub%]==[] call :setSub
-  >type.temp (echo(%~1!sub!)
+  >type.temp (echo(!a1!!sub!)
   copy type.temp /a type2.temp /b >nul
   type type2.temp
   del type.temp type2.temp
 goto :voidReturn
 
 :typeStringLn
-setLocal enableDelayedExpansion
-  if ["%~1"]==[""] goto :error
-  if not ["%~2"]==[""] goto :error
-  (echo(%1)
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not ["%~2"]==[""] goto :errorReturn
+  (echo(!a1!)
 goto :voidReturn
 
 :typeSp
-setLocal enableDelayedExpansion
-  if not ["%~1"]==[""] goto :error
+setLocal
+  if not ["%~1"]==[""] goto :errorReturn
   call :typeString " "
 goto :voidReturn
 
 :typeLn
-setLocal enableDelayedExpansion
-  if not ["%~1"]==[""] goto :error
+setLocal
+  if not ["%~1"]==[""] goto :errorReturn
   (echo()
 goto :voidReturn
 
 :typeFile
-setLocal enableDelayedExpansion
-  if ["%~1"]==[""] goto :error
-  if not ["%~2"]==[""] goto :error
-  type "%~1"
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not ["%~2"]==[""] goto :errorReturn
+  type "!a1!"
 goto :voidReturn
 
 :typeFileLn
-setLocal enableDelayedExpansion
-  if ["%~1"]==[""] goto :error
-  if not ["%~2"]==[""] goto :error
-  type "%~1"
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not ["%~2"]==[""] goto :errorReturn
+  type "!a1!"
   call :typeLn
 goto :voidReturn
 
+:escapeString
+REM no setLocal, a1, a2, :return
+  if ["%~1"]==[""] (
+    (echo(Error: %0 %*)
+    exit /b 1
+  )
+  set "%~1=!%~1:%%=%%%%!"
+  set "%~1=!%~1:&=^&!"
+  REM set "%~1=!%~1:^^!=!"
+  REM set "%~1=!%~1:t=!"
+  REM echo(# !%~1!
+exit /b 0
+
 :exclamationsReturnFile
-setLocal disableDelayedExpansion
-  if ["%~1"]==[""] goto :error
-  if not exist "%~1" goto :error
-  if not ["%~2"]==[""] goto :error
-  <"%~1" (set /p "return=")
-  REM echo | findstr "^" "%~1"
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not exist "!a1!" goto :errorReturn
+  if not ["%~2"]==[""] goto :errorReturn
+  <"!a1!" (set /p "return=")
+  REM findstr "^" "!a1!"
   REM required: !return!
 goto :exclamationsReturn
 
-:exclamationsReturnFileFirstLine
-setLocal enableDelayedExpansion
-  if ["%~1"]==[""] goto :error
-  if not exist "%~1" goto :error
-  if not ["%~2"]==[""] goto :error
+:exclamationsReturnFileLineCount
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not exist "!a1!" goto :errorReturn
+  if not ["%~2"]==[""] goto :errorReturn
   if [%sub%]==[] call :setSub
-  for /F "usebackq tokens=*" %%a in ("%~1") do (
-    set "return=%%a"
+  set "i=0"
+  for /F "usebackq tokens=*" %%a in ("!a1!") do (set "line=%%a"
+    (set /a "i=i+1")
   )
+  set "return=%i%"
+goto :exclamationsReturn
+
+:exclamationsReturnFileLastLine
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not exist "!a1!" goto :errorReturn
+  if not ["%~2"]==[""] goto :errorReturn
+  if [%sub%]==[] call :setSub
+  set "i=0"
+  for /F "usebackq tokens=*" %%a in ("!a1!") do (set "line=%%a"
+    (set /a "i=i+1")
+    set "return=!line!"
+  )
+  if ["%i%"]==["0"] goto :errorReturn
+  :exclamationsReturnFileLastLineBreak
+goto :exclamationsReturn
+
+:exclamationsReturnFileFirstLine
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not exist "!a1!" goto :errorReturn
+  if not ["%~2"]==[""] goto :errorReturn
+  if [%sub%]==[] call :setSub
+  for /F "usebackq tokens=*" %%a in ("!a1!") do (set "line=%%a"
+    set "return=!line!"
+    goto :exclamationsReturnFileFirstLineBreak
+  )
+  goto :errorReturn
+  :exclamationsReturnFileFirstLineBreak
+goto :exclamationsReturn
+
+:exclamationsReturnFileNthLine
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not exist "!a1!" goto :errorReturn
+  if not ["%~2"]==[""] goto :errorReturn
+  if [%sub%]==[] call :setSub
+  set "i=0"
+  for /F "usebackq tokens=*" %%a in ("!a1!") do (set "line=%%a"
+    (set /a "i=i+1")
+    (set "return=!line!")
+    if ["!a1!"]==["%i%"] goto :exclamationsReturnFileNthLineBreak
+  )
+  goto :errorReturn
+  :exclamationsReturnFileNthLineBreak
 goto :exclamationsReturn
 
 :setReturnString
-setLocal enableDelayedExpansion
-  if ["%~1"]==[""] goto :error
-  if not ["%~2"]==[""] goto :error
-  set "return=%~1"
-  REM call :newFileFromString "line.temp" "%~1"
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not ["%~2"]==[""] goto :errorReturn
+  set "return=!a1!"
+  REM call :newFileFromString "line.temp" "!a1!"
   REM <"line.temp" (set /p "return=")
 goto :exclamationsReturn
 
 :setReturnFile
-setLocal enableDelayedExpansion
-  if ["%~1"]==[""] goto :error
-  if not ["%~2"]==[""] goto :error
-  <"%~1" (set /p "return=")
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not ["%~2"]==[""] goto :errorReturn
+  <"!a1!" (set /p "return=")
 goto :exclamationsReturn
 
+:renameFileToFile
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not exist "!a1!" goto :errorReturn
+  set "a2=%~2" & if ["%~2"]==[""] goto :errorReturn
+  if not ["%~3"]==[""] goto :errorReturn
+  call :deleleFile "%~nx2"
+  rename "!a1!" "%~nx2"
+goto :voidReturn
+
 :newFileFromString
-setLocal enableDelayedExpansion
-  if ["%~1"]==[""] goto :error
-  if ["%~2"]==[""] goto :error
-  if not ["%~3"]==[""] goto :error
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  set "a2=%~2" & if ["%~2"]==[""] goto :errorReturn
+  if not ["%~3"]==[""] goto :errorReturn
   if [%sub%]==[] call :setSub
-  set "t=%~2"
-  >type.temp (echo(!t!!sub!)
-  copy type.temp /a "%~1" /b >nul
+  >type.temp (echo(!a2!!sub!)
+  copy type.temp /a "!a1!" /b >nul
   del type.temp
 goto :voidReturn
 
 :newFileLnFromString
-setLocal disableDelayedExpansion
-  if ["%~1"]==[""] goto :error
-  if ["%~2"]==[""] goto :error
-  if not ["%~3"]==[""] goto :error
-  >"%~1" (echo(%~2)
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  set "a2=%~2" & if ["%~2"]==[""] goto :errorReturn
+  if not ["%~3"]==[""] goto :errorReturn
+  >"!a1!" (echo(!a2!)
 goto :voidReturn
 
-:delFile
-setLocal disableDelayedExpansion
-  if ["%~1"]==[""] goto :error
-  if not ["%~2"]==[""] goto :error
-  del "%~1" >nul 2>&1
+:deleleFile
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not ["%~2"]==[""] goto :errorReturn
+  del "!a1!" >nul 2>&1
+  if exist "!a1!" goto :errorReturn
 goto :voidReturn
 
 :setSub
-copy nul sub.temp /a >nul
+setLocal
   REM SUB, EOF, Ctrl-Z, 0x1A, decimal 26
-  for /F %%a in (sub.temp) DO (
-     set "sub=%%a"
+  if not ["%~1"]==[""] goto :errorReturn
+  copy nul sub.temp /a >nul
+  for /F %%a in (sub.temp) DO (set "line=%%a"
+     set "sub=!line!"
   )
   del sub.temp
-exit /b
+  (set "export=sub")
+goto :exportReturn
 
 :setLf
+REM no setLocal, a1, a2, :return
+  if not ["%~1"]==[""] (
+    (echo(Error: %0 %*)
+    exit /b 1
+  )
   set lf=^
 
 
-  ::Above 2 blank lines are required - do not remove or indent
-  set ^"\n=^^^%LF%%LF%^%LF%%LF%^^"
+  REM Above 2 blank lines are required - do not remove or indent
+  REM (set "export=lf")
 exit /b 0
 
-:error
+REM :set\n
+REM setLocal
+  REM if not ["%~1"]==[""] goto :errorReturn
+  REM if [%lf%]==[] call :setLf
+  REM set ^"\n=^^^%LF%%LF%^%LF%%LF%^^"
+  REM (set "export=\n")
+REM goto :exportReturn
+
+:errorReturn
+set "a1=%~1"
 (echo(Error: %0 %*)
 endlocal & (set "return=")
 if ["%~1"]==[""] exit /b 1
-exit /b %~1
+exit /b !a1!
 
 :voidReturn
 REM return void
@@ -532,9 +733,17 @@ endlocal & (set "return=%return%") & exit /b 0
 
 :percentsReturn
 REM use %return%
-(set "return=%return%") & endlocal & (set "return=%return%")
-exit /b 0
+(set "return=%return%")
+REM do not merge into single line
+endlocal & (set "return=%return%") & exit /b 0
+
+:exportReturn
+REM use !variable!
+if ["%export%"]==[""] goto :errorReturn
+(set "return=!%export%!")
+endlocal & (set "%export%=%return%")
+(set "return=") & exit /b 0
 
 :exit
-if ["%~1"]==[""] exit /b 0
-exit /b %~1
+set "a1=%~1" & if ["%~1"]==[""] exit /b 0
+exit /b !a1!
