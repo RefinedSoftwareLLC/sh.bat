@@ -9,84 +9,147 @@ REM ###################
 echo(
 echo(compile :start
 echo(
-call :newVersionFile "compiler\version.txt"
-call :compileAll "example"
 
-start notepad "example.sh.bat"
+call :deleteCompiledFolderContents
+call :deleleFile "..\README.md"
+call :deleleFile "..\compile.bat"
+
+call :newVersionFile "%compilerFolder%\version.txt"
+
+call :compileAllNonprivileged "example"
+call :compileMd "README"
+call :compileBat "compile"
+call :compileAllNonprivileged "mute"
+call :compileAllNonprivileged "unmute"
+
+move /Y "README.md" "..\README.md" >nul
+move /Y "compile.bat" "..\compile.bat" >nul
+
+REM start notepad "example.sh.bat"
 goto :exit
 
-:compileAll
+:compileAllNonprivileged
 setLocal
   set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
   if not ["%~2"]==[""] goto :errorReturn
   call :newVersionFile "%sourceFolder%\!a1!.version.txt"
-  call :compileUser "!a1!"
-  call :compileAdmin "!a1!"
-  
+  call :compileSh "!a1!"
+  call :compilePs1 "!a1!"
+  call :compileShPs1 "!a1!"
+  REM call :compileShAdmin "!a1!"
+  REM call :compileRootPs1 "!a1!"
+  REM call :compileRootAdmin "!a1!"
 goto :voidReturn
 
-:compileUser
+:compileMd
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not ["%~2"]==[""] goto :errorReturn
+  call :setOutFile "!a1!.md"
+  call :clear
+  REM .md
+    call :addFileLn "%sourceFolder%\!a1!.md.txt"
+goto :voidReturn
+
+:compileSh
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not ["%~2"]==[""] goto :errorReturn
+  call :setOutFile "!a1!"
+  call :clear
+  REM .sh
+    call :prefixFile "%compilerFolder%\file.prefix.sh.txt"
+    call :shWithoutPs1 "!a1!"
+goto :voidReturn
+
+:compilePs1
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not ["%~2"]==[""] goto :errorReturn
+  call :setOutFile "!a1!.bat"
+  call :clear
+  REM .bat bootstrap
+    call :prefixFile "%compilerFolder%\file.prefix.ps1.txt"
+    call :batBootstrapPs1
+  REM .ps1
+    call :ps1 "!a1!"
+goto :voidReturn
+
+:compileBat
+setLocal
+  REM bat or ps1 but never both
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not ["%~2"]==[""] goto :errorReturn
+  call :setOutFile "!a1!.bat"
+  call :clear
+  REM .bat
+    call :prefixFile "%compilerFolder%\file.prefix.bat.txt"
+    call :bat "!a1!"
+goto :voidReturn
+
+:compileShPs1
 setLocal
   set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
   if not ["%~2"]==[""] goto :errorReturn
   call :setOutFile "!a1!.sh.bat"
   call :clear
   REM .bat bootstrap
-    call :prefixFileLn "compiler\file.prefix.txt"
-    call :addPrefixFileHeadWithEveryLineOfFile "compiler\comment.prefix.run.bat.txt" "compiler\bat.try.txt"
-    call :addPrefixFileHeadWithEveryLineOfFile "compiler\comment.prefix.run.bat.txt" "compiler\bat.finally.txt"
-  REM start .ps1 skip over .sh
-  call :addFileLn "compiler\ps1.skip.try.txt"
-    REM .sh
-      call :sh "!a1!"
-  REM end of .ps1 skip over .sh
-  call :addFileLn "compiler\ps1.skip.finally.txt"
+    call :prefixFile "%compilerFolder%\file.prefix.any.txt"
+    call :batBootstrapPs1
+  REM .sh
+    call :shBeforePs1 "!a1!"
   REM .ps1
     call :ps1 "!a1!"
 goto :voidReturn
 
-:compileAdmin
+:batBootstrapPs1
 setLocal
-  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
-  if not ["%~2"]==[""] goto :errorReturn
-  call :setOutFile "!a1!.admin.sh.bat"
-  call :clear
-  REM .bat bootstrap
-    call :prefixFile "compiler\file.prefix.txt"
-    call :addPrefixFileHeadWithEveryLineOfFile "compiler\comment.prefix.run.bat.txt" "compiler\bat.try.txt"
-    call :addPrefixFileHeadWithEveryLineOfFile "compiler\comment.prefix.run.bat.txt" "compiler\bat.finally.txt"
-  REM start .ps1 skip over .sh
-  call :addFileLn "compiler\ps1.skip.try.txt"
-    REM .sh
-      call :sh "!a1!"
-  REM end of .ps1 skip over .sh
-  call :addFileLn "compiler\ps1.skip.finally.txt"
-  REM .ps1
-    call :ps1 "!a1!"
+  if not ["%~1"]==[""] goto :errorReturn
+  call :addPrefixFileHeadWithEveryLineOfFileLn "%compilerFolder%\comment.prefix.run.bat.txt" "%compilerFolder%\bat.try.txt"
+  call :addPrefixFileHeadWithEveryLineOfFileLn "%compilerFolder%\comment.prefix.run.bat.txt" "%compilerFolder%\bat.powershell.txt"
+  call :addPrefixFileHeadWithEveryLineOfFileLn "%compilerFolder%\comment.prefix.run.bat.txt" "%compilerFolder%\bat.finally.txt"
 goto :voidReturn
 
-:sh
+:shBeforePs1
 setLocal
   set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
   if not ["%~2"]==[""] goto :errorReturn
-  call :addFile "compiler\sh.try.txt" & call :addFileHead "compiler\version.txt"
-  REM call :addStringLn " ###"
-    setLocal disableDelayedExpansion
-      >>"%outFile%" (echo( ###)
-    endLocal
-  REM call :addStringLn
+  REM start .ps1 skip over .sh
+  call :addFileLn "%compilerFolder%\ps1.skip.try.txt"
+    REM .sh
+      call :shWithoutPs1 "!a1!"
+  REM end of .ps1 skip over .sh
+  call :addFileLn "%compilerFolder%\ps1.skip.finally.txt"
+goto :voidReturn
+
+:shWithoutPs1
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not ["%~2"]==[""] goto :errorReturn
+  call :addFile "%compilerFolder%\sh.try.1.txt"
+  call :addFileHead "%compilerFolder%\version.txt"
+  call :addFileLn "%compilerFolder%\sh.try.2.txt"
     call :addFileLn "%sourceFolder%\!a1!.sh.txt"
-  REM call :addFileLn "compiler\sh.finally.txt"
+  call :addFileLn "%compilerFolder%\sh.finally.txt"
 goto :voidReturn
 
 :ps1
 setLocal
   set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
   if not ["%~2"]==[""] goto :errorReturn
-  call :addFileLn "compiler\ps1.constants.txt"
-  call :addFileLn "compiler\ps1.try.txt"
+  call :addFileLn "%compilerFolder%\ps1.constants.txt"
+  call :addFileLn "%compilerFolder%\ps1.try.txt"
     call :addFileLn "%sourceFolder%\!a1!.ps1.txt"
-  call :addFileLn "compiler\ps1.finally.txt"
+  call :addFileLn "%compilerFolder%\ps1.finally.txt"
+goto :voidReturn
+
+:bat
+setLocal
+  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  if not ["%~2"]==[""] goto :errorReturn
+  call :addPrefixFileHeadWithEveryLineOfFileLn "%compilerFolder%\comment.prefix.run.bat.txt" "%compilerFolder%\bat.try.txt"
+    call :addPrefixFileHeadWithEveryLineOfFileLn "%compilerFolder%\comment.prefix.run.bat.txt" "%sourceFolder%\!a1!.bat.txt"
+  call :addPrefixFileHeadWithEveryLineOfFileLn "%compilerFolder%\comment.prefix.run.bat.txt" "%compilerFolder%\bat.finally.txt"
 goto :voidReturn
 
 REM ###############
@@ -99,7 +162,14 @@ setLocal
   if not ["%~3"]==[""] goto :errorReturn
   set "a2=%~2" & if ["%~2"]==[""] (
     (set "return=")
-    if not exist "!a1!" call :newFileFromString "!a1!" "0.0.0.0"
+    if not exist "!a1!" (
+      REM call :newFileFromString "!a1!" "0.0.0.0"
+        if [%sub%]==[] call :setSub
+        >type.temp (echo(0.0.0.0!sub!)
+        copy type.temp /a "!a1!" /b >nul
+        del type.temp
+      REM end :newFileFromString
+    )
     call :exclamationsReturnFileFirstLine "!a1!"
     REM !return!=0.0.0.5
     if ["!return!"]==[""] goto :errorReturn
@@ -114,7 +184,10 @@ setLocal
   (set /a "z=z+1")
   REM %z%       =6
   REM %~n2.%z%  =0.0.0.6
-  call :newFileLnFromString "!a1!" "%~n2.%z%"
+  REM call :newFileLnFromString "!a1!" "%~n2.%z%"
+    REM todo only add ln if it is missing
+    >"!a1!" (echo(%~n2.%z%)
+  REM end :newFileLnFromString
 goto :voidReturn
 
 :clear
@@ -187,6 +260,7 @@ REM goto :voidReturn
 
 :addFileLn
 setLocal
+  REM todo only add ln if it is missing
   set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
   if not exist "!a1!" goto :errorReturn
   if not ["%~2"]==[""] goto :errorReturn
@@ -196,6 +270,7 @@ goto :voidReturn
 
 :addFileHeadLn
 setLocal
+  REM todo only add ln if it is missing
   set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
   if not exist "!a1!" goto :errorReturn
   if not ["%~2"]==[""] goto :errorReturn
@@ -231,6 +306,7 @@ goto :voidReturn
 
 :prefixFileLn
 setLocal
+  REM todo only add ln if it is missing
   set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
   if not exist "!a1!" goto :errorReturn
   if not ["%~2"]==[""] goto :errorReturn
@@ -239,6 +315,7 @@ goto :voidReturn
 
 :prefixFileHeadLn
 setLocal
+  REM todo only add ln if it is missing
   set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
   if not exist "!a1!" goto :errorReturn
   if not ["%~2"]==[""] goto :errorReturn
@@ -258,6 +335,7 @@ REM goto :voidReturn
 
 REM :addString
 REM setLocal
+  REM Strings can't be passed as arguments without escape glitches, you can only save and load them from files.
   REM set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
   REM if not ["%~2"]==[""] goto :errorReturn
   REM if [%sub%]==[] call :setSub
@@ -269,6 +347,7 @@ REM goto :voidReturn
 
 REM :addVariableLn
 REM setlocal
+  REM REM todo only add ln if it is missing
   REM set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
   REM if not ["%~2"]==[""] goto :errorReturn
   REM setLocal disableDelayedExpansion
@@ -276,42 +355,47 @@ REM setlocal
   REM endLocal
 REM goto :voidReturn
 
-:addStringLn
-setlocal
-  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
-  if not ["%~2"]==[""] goto :errorReturn
-  setLocal disableDelayedExpansion
-    >>"%outFile%" (echo(%~1)
-  endLocal
-goto :voidReturn
+REM :addStringLn
+REM setlocal
+  REM REM Strings can't be passed as arguments without escape glitches, you can only save and load them from files.
+  REM REM todo only add ln if it is missing
+  REM set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  REM if not ["%~2"]==[""] goto :errorReturn
+  REM setLocal disableDelayedExpansion
+    REM >>"%outFile%" (echo(%~1)
+  REM endLocal
+REM goto :voidReturn
 
-:prefixString
-setLocal
-  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
-  set "a2=%~2" & if not ["%~2"]==[""] if not ["!a2!"]==["ln"] goto :errorReturn
-  if not ["%~3"]==[""] goto :errorReturn
-  call :toBuffer
-  REM call :addString "!a1!"
-    if [%sub%]==[] call :setSub
-    >type.temp (echo(!a1!!sub!)
-    copy type.temp /a type2.temp /b >nul
-    >>"%outFile%" (type type2.temp)
-    del type.temp type2.temp
-  REM end :addString
+REM :prefixString
+REM setLocal
+  REM REM Strings can't be passed as arguments without escape glitches, you can only save and load them from files.
+  REM set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  REM set "a2=%~2" & if not ["%~2"]==[""] if not ["!a2!"]==["ln"] goto :errorReturn
+  REM if not ["%~3"]==[""] goto :errorReturn
+  REM call :toBuffer
+  REM REM call :addString "!a1!"
+    REM if [%sub%]==[] call :setSub
+    REM >type.temp (echo(!a1!!sub!)
+    REM copy type.temp /a type2.temp /b >nul
+    REM >>"%outFile%" (type type2.temp)
+    REM del type.temp type2.temp
+  REM REM end :addString
   
-  if ["!a2!"]==["ln"] call :addLn
-  call :addFile "buffer.temp"
-  call :clearBuffer
-goto :voidReturn
+  REM if ["!a2!"]==["ln"] call :addLn
+  REM call :addFile "buffer.temp"
+  REM call :clearBuffer
+REM goto :voidReturn
 
-:prefixStringLn
-setLocal
-  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
-  if not ["%~2"]==[""] goto :errorReturn
-  call :prefixString "!a1!" "ln"
-goto :voidReturn
+REM :prefixStringLn
+REM setLocal
+  REM REM Strings can't be passed as arguments without escape glitches, you can only save and load them from files.
+  REM REM todo only add ln if it is missing
+  REM set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  REM if not ["%~2"]==[""] goto :errorReturn
+  REM call :prefixString "!a1!" "ln"
+REM goto :voidReturn
 
-:everyLinePrefixFile
+:everyLinePrefixFileLn
 setLocal
   set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
   if not exist "!a1!" goto :errorReturn
@@ -330,7 +414,7 @@ setLocal
   call :clearBuffer
 goto :voidReturn
 
-:everyLinePrefixFileHead
+:everyLinePrefixFileHeadLn
 setLocal
   set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
   if not exist "!a1!" goto :errorReturn
@@ -349,31 +433,32 @@ setLocal
   call :clearBuffer
 goto :voidReturn
 
-:everyLinePrefixString
-setLocal
-  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
-  if not ["%~2"]==[""] goto :errorReturn
-  call :toBuffer
-  for /f "usebackq delims=" %%a in ("buffer.temp") do (set "line=%%a"
-    REM call :addString "!a1!"
-      if [%sub%]==[] call :setSub
-      >type.temp (echo(!a1!!sub!)
-      copy type.temp /a type2.temp /b >nul
-      >>"%outFile%" (type type2.temp)
-      del type.temp type2.temp
-    REM end :addString
-    REM call :addString "!line!"
-      if [%sub%]==[] call :setSub
-      >type.temp (echo(!line!!sub!)
-      copy type.temp /a type2.temp /b >nul
-      >>"%outFile%" (type type2.temp)
-      del type.temp type2.temp
-    REM end :addString
-  )
-  call :clearBuffer
-goto :voidReturn
+REM :everyLinePrefixStringLn
+REM setLocal
+  REM REM Strings can't be passed as arguments without escape glitches, you can only save and load them from files.
+  REM set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  REM if not ["%~2"]==[""] goto :errorReturn
+  REM call :toBuffer
+  REM for /f "usebackq delims=" %%a in ("buffer.temp") do (set "line=%%a"
+    REM REM call :addString "!a1!"
+      REM if [%sub%]==[] call :setSub
+      REM >type.temp (echo(!a1!!sub!)
+      REM copy type.temp /a type2.temp /b >nul
+      REM >>"%outFile%" (type type2.temp)
+      REM del type.temp type2.temp
+    REM REM end :addString
+    REM REM call :addString "!line!"
+      REM if [%sub%]==[] call :setSub
+      REM >type.temp (echo(!line!!sub!)
+      REM copy type.temp /a type2.temp /b >nul
+      REM >>"%outFile%" (type type2.temp)
+      REM del type.temp type2.temp
+    REM REM end :addString
+  REM )
+  REM call :clearBuffer
+REM goto :voidReturn
 
-:addPrefixFileWithEveryLineOfFile
+:addPrefixFileWithEveryLineOfFileLn
 setLocal
   set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
   if not exist "!a1!" goto :errorReturn
@@ -392,7 +477,7 @@ setLocal
   )
 goto :voidReturn
 
-:addPrefixFileHeadWithEveryLineOfFile
+:addPrefixFileHeadWithEveryLineOfFileLn
 setLocal
   set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
   if not exist "!a1!" goto :errorReturn
@@ -408,32 +493,32 @@ setLocal
       endLocal
     REM call :addStringLn
   )
-  
 goto :voidReturn
 
-:addPrefixStringWithEveryLineOfFile
-setLocal
-  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
-  set "a2=%~2" & if ["%~2"]==[""] goto :errorReturn
-  if not exist "!a2!" goto :errorReturn
-  if not ["%~3"]==[""] goto :errorReturn
-  for /f "usebackq delims=" %%a in ("!a2!") do (set "line=%%a"
-    REM call :addString "!a1!"
-      if [%sub%]==[] call :setSub
-      >type.temp (echo(!a1!!sub!)
-      copy type.temp /a type2.temp /b >nul
-      >>"%outFile%" (type type2.temp)
-      del type.temp type2.temp
-    REM end :addString
-    REM call :addString "!line!"
-      if [%sub%]==[] call :setSub
-      >type.temp (echo(!line!!sub!)
-      copy type.temp /a type2.temp /b >nul
-      >>"%outFile%" (type type2.temp)
-      del type.temp type2.temp
-    REM end :addString
-  )
-goto :voidReturn
+REM :addPrefixStringWithEveryLineOfFileLn
+REM setLocal
+  REM REM Strings can't be passed as arguments without escape glitches, you can only save and load them from files.
+  REM set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  REM set "a2=%~2" & if ["%~2"]==[""] goto :errorReturn
+  REM if not exist "!a2!" goto :errorReturn
+  REM if not ["%~3"]==[""] goto :errorReturn
+  REM for /f "usebackq delims=" %%a in ("!a2!") do (set "line=%%a"
+    REM REM call :addString "!a1!"
+      REM if [%sub%]==[] call :setSub
+      REM >type.temp (echo(!a1!!sub!)
+      REM copy type.temp /a type2.temp /b >nul
+      REM >>"%outFile%" (type type2.temp)
+      REM del type.temp type2.temp
+    REM REM end :addString
+    REM REM call :addString "!line!"
+      REM if [%sub%]==[] call :setSub
+      REM >type.temp (echo(!line!!sub!)
+      REM copy type.temp /a type2.temp /b >nul
+      REM >>"%outFile%" (type type2.temp)
+      REM del type.temp type2.temp
+    REM REM end :addString
+  REM )
+REM goto :voidReturn
 
 REM ##############
 REM ### engine ###
@@ -460,8 +545,9 @@ setLocal
 (set /a "setLocal=setLocal+1")
 REM Above 2 setLocals are required - do not remove
 pushd %~dp0
-call :setOutFolder ".."
-(set "sourceFolder=.\source")
+call :setOutFolder "..\compiled"
+(set "compilerFolder=%~dp0\..\compiler")
+(set "sourceFolder=%~dp0\..\source")
 call :setLf
 call :setSub
 if not ["%~1"]==[""] (echo(Error: %0 %*)
@@ -489,6 +575,7 @@ REM no setLocal, a1, a2, :return
   )
   popd
   pushd "%~dp0\%~1"
+  (set "compiledFolder=%~dp0\%~1")
 exit /b 0
 
 :setOutFile
@@ -504,29 +591,32 @@ REM no setLocal, a1, a2, :return
   (set "outFile=%~1")
 exit /b 0
 
-:typeString
-setLocal
-  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
-  if not ["%~2"]==[""] goto :errorReturn
-  if [%sub%]==[] call :setSub
-  >type.temp (echo(!a1!!sub!)
-  copy type.temp /a type2.temp /b >nul
-  type type2.temp
-  del type.temp type2.temp
-goto :voidReturn
+REM :typeString
+REM setLocal
+  REM REM Strings can't be passed as arguments without escape glitches, you can only save and load them from files.
+  REM set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  REM if not ["%~2"]==[""] goto :errorReturn
+  REM if [%sub%]==[] call :setSub
+  REM >type.temp (echo(!a1!!sub!)
+  REM copy type.temp /a type2.temp /b >nul
+  REM type type2.temp
+  REM del type.temp type2.temp
+REM goto :voidReturn
 
-:typeStringLn
-setLocal
-  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
-  if not ["%~2"]==[""] goto :errorReturn
-  (echo(!a1!)
-goto :voidReturn
+REM :typeStringLn
+REM setLocal
+  REM REM Strings can't be passed as arguments without escape glitches, you can only save and load them from files.
+  REM REM todo only add ln if it is missing
+  REM set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  REM if not ["%~2"]==[""] goto :errorReturn
+  REM (echo(!a1!)
+REM goto :voidReturn
 
-:typeSp
-setLocal
-  if not ["%~1"]==[""] goto :errorReturn
-  call :typeString " "
-goto :voidReturn
+REM :typeSp
+REM setLocal
+  REM if not ["%~1"]==[""] goto :errorReturn
+  REM call :typeString " "
+REM goto :voidReturn
 
 :typeLn
 setLocal
@@ -543,6 +633,7 @@ goto :voidReturn
 
 :typeFileLn
 setLocal
+  REM todo only add ln if it is missing
   set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
   if not ["%~2"]==[""] goto :errorReturn
   type "!a1!"
@@ -630,14 +721,15 @@ setLocal
   :exclamationsReturnFileNthLineBreak
 goto :exclamationsReturn
 
-:setReturnString
-setLocal
-  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
-  if not ["%~2"]==[""] goto :errorReturn
-  set "return=!a1!"
-  REM call :newFileFromString "line.temp" "!a1!"
-  REM <"line.temp" (set /p "return=")
-goto :exclamationsReturn
+REM :setReturnString
+REM setLocal
+  REM REM Strings can't be passed as arguments without escape glitches, you can only save and load them from files.
+  REM set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  REM if not ["%~2"]==[""] goto :errorReturn
+  REM set "return=!a1!"
+  REM REM call :newFileFromString "line.temp" "!a1!"
+  REM REM <"line.temp" (set /p "return=")
+REM goto :exclamationsReturn
 
 :setReturnFile
 setLocal
@@ -656,24 +748,27 @@ setLocal
   rename "!a1!" "%~nx2"
 goto :voidReturn
 
-:newFileFromString
-setLocal
-  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
-  set "a2=%~2" & if ["%~2"]==[""] goto :errorReturn
-  if not ["%~3"]==[""] goto :errorReturn
-  if [%sub%]==[] call :setSub
-  >type.temp (echo(!a2!!sub!)
-  copy type.temp /a "!a1!" /b >nul
-  del type.temp
-goto :voidReturn
+REM :newFileFromString
+REM setLocal
+  REM REM Strings can't be passed as arguments without escape glitches, you can only save and load them from files.
+  REM set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  REM set "a2=%~2" & if ["%~2"]==[""] goto :errorReturn
+  REM if not ["%~3"]==[""] goto :errorReturn
+  REM if [%sub%]==[] call :setSub
+  REM >type.temp (echo(!a2!!sub!)
+  REM copy type.temp /a "!a1!" /b >nul
+  REM del type.temp
+REM goto :voidReturn
 
-:newFileLnFromString
-setLocal
-  set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
-  set "a2=%~2" & if ["%~2"]==[""] goto :errorReturn
-  if not ["%~3"]==[""] goto :errorReturn
-  >"!a1!" (echo(!a2!)
-goto :voidReturn
+REM :newFileLnFromString
+REM setLocal
+  REM REM Strings can't be passed as arguments without escape glitches, you can only save and load them from files.
+  REM REM todo only add ln if it is missing
+  REM set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
+  REM set "a2=%~2" & if ["%~2"]==[""] goto :errorReturn
+  REM if not ["%~3"]==[""] goto :errorReturn
+  REM >"!a1!" (echo(!a2!)
+REM goto :voidReturn
 
 :deleleFile
 setLocal
@@ -681,6 +776,14 @@ setLocal
   if not ["%~2"]==[""] goto :errorReturn
   del "!a1!" >nul 2>&1
   if exist "!a1!" goto :errorReturn
+goto :voidReturn
+
+:deleteCompiledFolderContents
+setLocal
+  if not ["%~1"]==[""] goto :errorReturn
+  
+  REM RMDIR . /S /Q
+  
 goto :voidReturn
 
 :setSub
@@ -731,11 +834,12 @@ endlocal & (set "return=") & exit /b 0
 REM use !return!
 endlocal & (set "return=%return%") & exit /b 0
 
-:percentsReturn
-REM use %return%
-(set "return=%return%")
-REM do not merge into single line
-endlocal & (set "return=%return%") & exit /b 0
+REM :percentsReturn
+REM REM use %return%
+REM REM (call set "return=%return%")
+REM (set "return=%return%")
+REM REM do not merge into single line
+REM endlocal & (set "return=%return%") & exit /b 0
 
 :exportReturn
 REM use !variable!

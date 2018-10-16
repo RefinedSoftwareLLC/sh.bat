@@ -64,4 +64,3 @@ Windows:
 
 - https://blog.netspi.com/15-ways-to-bypass-the-powershell-execution-policy/
 - https://docs.chef.io/install_omnibus.html
-

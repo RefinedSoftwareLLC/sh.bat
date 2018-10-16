@@ -1,1 +1,0 @@
-curl -s -L https://github.com/RefinedSoftwareLLC/sh.bat/raw/master/sh.bat | sh

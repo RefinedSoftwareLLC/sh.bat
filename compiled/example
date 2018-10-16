@@ -1,0 +1,14 @@
+#!/bin/sh
+pushd $(dirname $(realpath $0))
+### DO NOT MODIFY THESE LINES - github.com/RefinedSoftwareLLC/sh.bat - v0.5.1.597 ###
+
+################
+### .sh mode ###
+################
+
+echo "passed: $*"
+
+###############
+### .sh end ###
+###############
+

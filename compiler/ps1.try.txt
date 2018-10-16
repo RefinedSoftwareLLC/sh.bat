@@ -1,2 +1,6 @@
 Try{
 ### DO NOT MODIFY THESE LINES ###
+
+#################
+### .ps1 mode ###
+#################
