@@ -10,20 +10,21 @@ echo(
 echo(compile :start
 echo(
 
-call :deleteCompiledFolderContents
-call :deleleFile "..\README.md"
-call :deleleFile "..\compile.bat"
-
 call :newVersionFile "%compilerFolder%\version.txt"
 
-call :compileAllNonprivileged "example"
 call :compileMd "README"
-call :compileBat "compile"
-call :compileAllNonprivileged "mute"
-call :compileAllNonprivileged "unmute"
-
+call :deleleFile "..\README.md"
 move /Y "README.md" "..\README.md" >nul
+
+call :compileBat "compile"
+call :deleleFile "..\compile.bat"
 move /Y "compile.bat" "..\compile.bat" >nul
+
+call :deleteCompiledFolderContents
+
+call :compileAllNonprivileged "example"
+call :compileAllNonprivileged "unmute"
+call :compileAllNonprivileged "mute"
 
 REM start notepad "example.sh.bat"
 goto :exit
@@ -781,9 +782,7 @@ goto :voidReturn
 :deleteCompiledFolderContents
 setLocal
   if not ["%~1"]==[""] goto :errorReturn
-  
-  REM RMDIR . /S /Q
-  
+  pushd "%compiledFolder%\..\compiled\." && (rd /s /q "%compiledFolder%\..\compiled\." 2>nul & popd)
 goto :voidReturn
 
 :setSub
