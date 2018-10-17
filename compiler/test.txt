@@ -1,0 +1,16 @@
+
+Second line     |
+
+    Fourth line |
+    Fifth line  |
+    
+7th;4 Sp on last|
+Percent %       |
+Exclamation !   |
+Carrot ^        |
+And &           |
+Astrix *        |
+Colon :         |
+] close bracket |
+brackets []     |
+Colons :  :  :  |

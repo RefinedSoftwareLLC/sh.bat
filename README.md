@@ -4,53 +4,50 @@
 
 Linux:
 
-    curl -s -L https://github.com/RefinedSoftwareLLC/sh.bat/raw/master/sh.bat | sh
+    curl -s -L https://raw.githubusercontent.com/RefinedSoftwareLLC/sh.bat/master/user.sh.bat | sh
 
 Windows:
 
     powershell -nop -c "iex(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/RefinedSoftwareLLC/sh.bat/master/user.sh.bat')"
 
 #### Create a single script that runs on Linux (.sh) and Windows (.ps1):
-    
-    @ 2>/dev/null # 2>nul&echo off&setlocal enabledelayedexpansion&title %~n0&cd %~dp0&echo|set /p=# >"%~nx0.temp.ps1"&type "%~nx0" >>"%~nx0.temp.ps1"
-    # 2>nul&powershell -exec bypass -noprofile -file "%~nx0.temp.ps1" %*&set err=!errorlevel!
-    # 2>nul&del "%~nx0.temp.ps1"&(if not !err! == 0 (if %0 == "%~0" (echo.&echo|set /p="Press any key to close..."&pause >nul)))&exit /b !err!
-    echo \' >/dev/null ' >$null;[void]@'
-    cd $(dirname $(realpath $0))
-    ### github.com/RefinedSoftwareLLC/sh.bat - v0.5 - DO NOT MODIFY THESE LINES ###
 
+    @{}# 2>/dev/null # 2>nul&setLocal&echo off
+    # 2>nul&title %~n0
+    # 2>nul&"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "Invoke-Command -ScriptBlock ([ScriptBlock]::Create('Push-Location -LiteralPath ''%~dp0'';#'+(Get-Content -Path '%~dp0\%~nx0' | Out-String)))" -Arg @('%1','%2','%3','%4','%5','%6','%7','%8','%9')&set err=!errorlevel!
+    # 2>nul&(if not !err! == 0 (if %0 == "%~0" (echo(&echo|set /p="Press any key to close..."&pause >nul)))&exit /b !err!
+    set .=\`';[void]@'
+    pushd $(dirname $(realpath $0))
+    ### DO NOT MODIFY THESE LINES - github.com/RefinedSoftwareLLC/sh.bat - v0.5.1.611 ###
+    
     ################
     ### .sh mode ###
     ################
+    
     echo "passed: $*"
-
-    # place .sh script here
-
+    
     ###############
     ### .sh end ###
     ###############
-
-    '@ #' 2>/dev/null;exit 0
-    if ($PSScriptRoot -eq $Null) {$PSScriptRoot = Split-Path -Parent -Path $MyInvocation.MyCommand.Definition}
-    cd $PSScriptRoot
-    function DropExt ($file,$repeat=1) {$a=$file.Split('.');[string]::Join('.', $a[0..($a.count-1-$repeat)])}
-    $Host.UI.RawUI.WindowTitle = DropExt $MyInvocation.MyCommand.Name 3
-    function pause {Write-Host -NoNewLine "`nPress any key to continue...";$null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")}
-    function Write-Throw {for($i = $Error.count-1; $i -ge 0; $i--){$Er = $Error[$i];$Ii=$Er.InvocationInfo;$Ex=$Er.Exception;Write-Warning "$($Ii.MyCommand) : $($Ex.Message)`nAt$([char]0x00A0)$($Ii.ScriptName):$($Ii.ScriptLineNumber) char:$($Ii.OffsetInline)`n$($Ii.Line)"}}
-    try{
+    
+    '@ #' 2>/dev/null;Exit 0
+    If (-Not $PSScriptRoot) {$PSScriptRoot=(Get-Item -Path ".\" -Verbose).FullName}
+    Function Pause {Write-Host -NoNewLine "`nPress any key to continue...";$null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")}
+    Function Write-Throw {for($i = $Error.count-1; $i -ge 0; $i--){$Er = $Error[$i];$Ii=$Er.InvocationInfo;$Ex=$Er.Exception;Write-Warning "$($Ii.MyCommand) : $($Ex.Message)`nAt$([char]0x00A0)$($Ii.ScriptName):$($Ii.ScriptLineNumber) char:$($Ii.OffsetInline)`n$($Ii.Line)"}}
+    Try{
     ### DO NOT MODIFY THESE LINES ###
-
+    
     #################
     ### .ps1 mode ###
     #################
-    Write-Host passed: $args
     
-    # place .ps1 script here
+    Write-Host "passed: $args"
     
     ################
     ### .ps1 end ###
     ################
-    }finally{if($Error[0]){Write-Throw;pause;exit 2}exit 0}
+    
+    }Finally{If($Error[0]){Write-Throw;Pause;Exit 2}Exit 0}
     ### DO NOT MODIFY THIS LINE ###
 
 #### Notes:
@@ -64,4 +61,3 @@ Windows:
 
 - https://blog.netspi.com/15-ways-to-bypass-the-powershell-execution-policy/
 - https://docs.chef.io/install_omnibus.html
-

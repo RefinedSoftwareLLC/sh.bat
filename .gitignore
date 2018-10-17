@@ -1,3 +1,5 @@
 *.temp
 test.manual.bat
 test.manual.ps1
+compiler/compiled/
+source/compiled/
