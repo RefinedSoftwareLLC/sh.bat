@@ -198,7 +198,7 @@ setLocal
     if not exist "!a1!" (
       REM call :newFileFromString "!a1!" "0.0.0.0"
         if [%sub%]==[] call :setSub
-        >type.temp (echo(0.0.0.0!sub!)
+        >type.temp (echo(0.0.0.0%sub%)
         copy type.temp /a "!a1!" /b >nul
         del type.temp
       REM end :newFileFromString
@@ -275,7 +275,7 @@ setLocal
   call :exclamationsReturnFileFirstLine "!a1!"
   REM call :addString "!return!"
     if [%sub%]==[] call :setSub
-    >type.temp (echo(!return!!sub!)
+    >type.temp (echo(!return!%sub%)
     copy type.temp /a type2.temp /b >nul
     >>"%outFile%" (type type2.temp)
     del type.temp type2.temp
@@ -351,7 +351,7 @@ REM setLocal
   REM set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
   REM if not ["%~2"]==[""] goto :errorReturn
   REM if [%sub%]==[] call :setSub
-  REM >type.temp (echo(!%a1%!!sub!)
+  REM >type.temp (echo(!%a1%!%sub%)
   REM copy type.temp /a type2.temp /b >nul
   REM >>"%outFile%" (type type2.temp)
   REM del type.temp type2.temp
@@ -363,7 +363,7 @@ REM setLocal
   REM set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
   REM if not ["%~2"]==[""] goto :errorReturn
   REM if [%sub%]==[] call :setSub
-  REM >type.temp (echo(!a1!!sub!)
+  REM >type.temp (echo(!a1!%sub%)
   REM copy type.temp /a type2.temp /b >nul
   REM >>"%outFile%" (type type2.temp)
   REM del type.temp type2.temp
@@ -399,7 +399,7 @@ REM setLocal
   REM call :toBuffer
   REM REM call :addString "!a1!"
     REM if [%sub%]==[] call :setSub
-    REM >type.temp (echo(!a1!!sub!)
+    REM >type.temp (echo(!a1!%sub%)
     REM copy type.temp /a type2.temp /b >nul
     REM >>"%outFile%" (type type2.temp)
     REM del type.temp type2.temp
@@ -430,7 +430,7 @@ setLocal
       call :addFile "!a1!"
       REM call :addString "!line!"
         if [%sub%]==[] call :setSub
-        >type.temp (echo(!line!!sub!)
+        >type.temp (echo(!line!%sub%)
         copy type.temp /a type2.temp /b >nul
         >>"%outFile%" (type type2.temp)
         del type.temp type2.temp
@@ -451,7 +451,7 @@ setLocal
       call :addFileHead "!a1!"
       REM call :addString "!line!"
         if [%sub%]==[] call :setSub
-        >type.temp (echo(!line!!sub!)
+        >type.temp (echo(!line!%sub%)
         copy type.temp /a type2.temp /b >nul
         >>"%outFile%" (type type2.temp)
         del type.temp type2.temp
@@ -471,14 +471,14 @@ REM setLocal
     REM (call :newFile "lastForLine.temp") & setLocal disableDelayedExpansion & for /f "tokens=* delims=" %%A in ('findstr /b /n "^" "%forFile%"') do (set "line=%%A" & setLocal enableDelayedExpansion & set "line=!line:*:=!" & >type.temp (echo(!line!%sub%) & copy type.temp /a "lastForLine.temp" /b >nul & del type.temp
       REM REM call :addString "!a1!"
         REM if [%sub%]==[] call :setSub
-        REM >type.temp (echo(!a1!!sub!)
+        REM >type.temp (echo(!a1!%sub%)
         REM copy type.temp /a type2.temp /b >nul
         REM >>"%outFile%" (type type2.temp)
         REM del type.temp type2.temp
       REM REM end :addString
       REM REM call :addString "!line!"
         REM if [%sub%]==[] call :setSub
-        REM >type.temp (echo(!line!!sub!)
+        REM >type.temp (echo(!line!%sub%)
         REM copy type.temp /a type2.temp /b >nul
         REM >>"%outFile%" (type type2.temp)
         REM del type.temp type2.temp
@@ -533,7 +533,7 @@ REM setLocal
     (call :newFile "lastForLine.temp") & setLocal disableDelayedExpansion & for /f "tokens=* delims=" %%A in ('findstr /b /n "^" "%forFile%"') do (set "line=%%A" & setLocal enableDelayedExpansion & set "line=!line:*:=!" & >type.temp (echo(!line!%sub%) & copy type.temp /a "lastForLine.temp" /b >nul & del type.temp
       REM call :addString "!a1!"
         if [%sub%]==[] call :setSub
-        >type.temp (echo(!a1!!sub!)
+        >type.temp (echo(!a1!%sub%)
         copy type.temp /a type2.temp /b >nul
         >>"%outFile%" (type type2.temp)
         del type.temp type2.temp
@@ -664,7 +664,7 @@ REM setLocal
   REM set "a1=%~1" & if ["%~1"]==[""] goto :errorReturn
   REM if not ["%~2"]==[""] goto :errorReturn
   REM if [%sub%]==[] call :setSub
-  REM >type.temp (echo(!a1!!sub!)
+  REM >type.temp (echo(!a1!%sub%)
   REM copy type.temp /a type2.temp /b >nul
   REM type type2.temp
   REM del type.temp type2.temp
@@ -848,7 +848,7 @@ REM setLocal
   REM set "a2=%~2" & if ["%~2"]==[""] goto :errorReturn
   REM if not ["%~3"]==[""] goto :errorReturn
   REM if [%sub%]==[] call :setSub
-  REM >type.temp (echo(!a2!!sub!)
+  REM >type.temp (echo(!a2!%sub%)
   REM copy type.temp /a "!a1!" /b >nul
   REM del type.temp
 REM goto :voidReturn

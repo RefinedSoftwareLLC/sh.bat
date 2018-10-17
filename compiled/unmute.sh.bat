@@ -4,7 +4,7 @@
 # 2>nul&(if not !err! == 0 (if %0 == "%~0" (echo(&echo|set /p="Press any key to close..."&pause >nul)))&exit /b !err!
 set .=\`';[void]@'
 pushd $(dirname $(realpath $0))
-### DO NOT MODIFY THESE LINES - github.com/RefinedSoftwareLLC/sh.bat - v0.5.1.612 ###
+### DO NOT MODIFY THESE LINES - github.com/RefinedSoftwareLLC/sh.bat - v0.5.1.613 ###
 
 ################
 ### .sh mode ###
