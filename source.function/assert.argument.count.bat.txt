@@ -1,0 +1,17 @@
+call :setHashArgumentCount %*
+if not ["%#%"]==["0"] (
+  >&2 (echo(error assert failed for not being passed 0 arguments: %0 %*)
+  exit /b 1
+)
+goto assertArgumentsContinue
+:setHashArgumentCount
+  set /a "#=0"
+  REM Fall-through
+:setHashArgumentCountTailCall
+  if not ["%1"]==[""] (
+    set /a "#=%#%+1"
+    shift
+    goto :setHashArgumentCountTailCall
+  )
+exit /b 0
+:assertArgumentsContinue

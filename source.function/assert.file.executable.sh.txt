@@ -1,0 +1,4 @@
+if [ ! -f $1 ] || [ ! -x $1 ]; then
+  >&2 echo error assert failed for file missing or not set executable by chmod: $1
+  exit 1
+fi

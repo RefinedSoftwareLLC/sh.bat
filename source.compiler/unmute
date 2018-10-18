@@ -1,0 +1,15 @@
+#!/bin/sh
+pushd $(dirname $(realpath $0))
+### DO NOT MODIFY THESE LINES - github.com/RefinedSoftwareLLC/sh.bat - v0.5.1.617 ###
+
+################
+### .sh mode ###
+################
+
+pactl set-sink-mute 0 0
+
+###############
+### .sh end ###
+###############
+
+exit 0

@@ -1,0 +1,1 @@
+(if %0 == "%~0" (echo(&echo|set /p="Press any key to close..."&pause >nul))&exit /b 0

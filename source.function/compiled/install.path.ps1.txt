@@ -1,0 +1,12 @@
+Function installPath($pathString) {
+  If (Test-Path -Path %1 -PathType Container) {
+    $pathArray = (Get-ItemProperty -Path "Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment" -Name PATH).path.split(";");
+    if (-Not ($pathArray -contains $pathString)) {
+      $newPath = [String]::Join(';', $pathArray + $pathString);
+      Set-ItemProperty -Path "Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment" -Name PATH -Value "$($newPath)";
+      fixPath;
+    }
+  } Else {
+    Write-Error 'Error installing Path into PATH Environment Variable, Path not found: ' + %1;
+  }
+}

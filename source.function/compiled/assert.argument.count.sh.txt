@@ -1,0 +1,4 @@
+if (( $# != 0 )); then
+  >&2 echo error assert failed for not being passed 0 arguments: $0 $@
+  exit 1
+fi

@@ -1,0 +1,8 @@
+Quote in mode:
+sh bat ps1 "
+sh bat     \`"
+sh     ps1 ^"
+   bat ps1 \"
+sh         "\"
+   bat     "^"
+       ps1 "\`"

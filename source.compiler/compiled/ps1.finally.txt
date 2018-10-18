@@ -1,0 +1,7 @@
+
+################
+### .ps1 end ###
+################
+
+}Finally{If(IsError){Write-Throw;Pause;Exit 2}Exit 0}
+### DO NOT MODIFY THIS LINE ###
