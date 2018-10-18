@@ -1,15 +1,15 @@
 @{}# 2>nul&setLocal&echo off
-# 2>nul&title %~nx0&(if %0 == "%~0" (cls))&pushd %~dp0
 set .=\`';[void]@'
 
+# 2>nul&title %~nx0&(if %0 == "%~0" (cls))&pushd %~dp0
 # 2>nul&set "dpnx=%~dp0\%~nx0"&set "dp=%~dp0"&set "args="&(if not ["%1"]==[""] (set "args='%1'"&shift))
 :loopTailCall 2>/dev/null
 # 2>nul&(if not ["%1"]==[""] (set "args=%args%,'%1'"&shift&goto :loopTailCall))
 # 2>nul&"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "Invoke-Command -ScriptBlock ([ScriptBlock]::Create('Push-Location -LiteralPath ''%dp%'';'+(Get-Content -Path '%dpnx%' | Out-String)))" -Arg @(%args%)&set err=!errorlevel!
+# 2>nul&(if not !err! == 0 (if %0 == "%~0" (echo(&echo|set /p="Press any key to close..."&pause >nul)))&exit /b !err!
 
 '@ #' 2>/dev/null # 2>null
 
-# 2>nul&(if not !err! == 0 (if %0 == "%~0" (echo(&echo|set /p="Press any key to close..."&pause >nul)))&exit /b !err!
 Set-ExecutionPolicy Bypass -Scope Process -Force;
 Set-StrictMode -Version 2.0
 & {param($PSScriptRoot);If (-Not $PSScriptRoot) {$Script:PSScriptRoot=(Get-Item -Path ".\" -Verbose).FullName;};};

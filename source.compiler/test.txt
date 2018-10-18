@@ -11,6 +11,10 @@ Carrot ^        |
 And &           |
 Astrix *        |
 Colon :         |
-] close bracket |
-brackets []     |
+] [ brackets } {|
+{ } brackets [ ]|
 Colons :  :  :  |
+QuotePairs''""``|
+QuoteSingles '"`|
+parentheses ) ( |
+parentheses ( ) |

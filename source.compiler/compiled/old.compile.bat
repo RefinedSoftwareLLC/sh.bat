@@ -83,7 +83,7 @@ setLocal
   call :clear
   REM .sh
     call :prefixFile "%compilerFolder%\file.prefix.sh.txt"
-    call :shWithoutPs1 "!a1!"
+    call :sh "!a1!"
 goto :voidReturn
 
 :compilePs1
@@ -158,7 +158,7 @@ setLocal
     call :prefixFile "%compilerFolder%\file.prefix.any.txt"
     call :batBootstrapPs1
   REM .sh
-    call :shBeforePs1 "!a1!"
+    call :sh "!a1!"
   REM .ps1
     call :ps1 "!a1!"
 goto :voidReturn
@@ -173,7 +173,7 @@ setLocal
     call :prefixFile "%compilerFolder%\file.prefix.any.txt"
     call :batHiddenPs1
   REM .sh
-    call :shBeforePs1 "!a1!"
+    call :sh "!a1!"
   REM .ps1
     call :ps1Admin "!a1!"
 goto :voidReturn
@@ -181,36 +181,22 @@ goto :voidReturn
 :batBootstrapPs1
 setLocal
   (if not ["%~1"]==[""] goto :errorReturn)
-  call :addPrefixFileHeadWithEveryLineOfFileLn "%compilerFolder%\comment.prefix.run.bat.txt" "%compilerFolder%\bat.bootstrap.ps1.try.txt"
   call :addFileLn "%compilerFolder%\ps1.skip.try.txt"
+  call :addPrefixFileHeadWithEveryLineOfFileLn "%compilerFolder%\comment.prefix.run.bat.txt" "%compilerFolder%\bat.bootstrap.ps1.try.txt"
   call :addFileLn "%compilerFolder%\bat.bootstrap.ps1.powershell.txt"
-  call :addFileLn "%compilerFolder%\ps1.skip.finally.txt"
   call :addPrefixFileHeadWithEveryLineOfFileLn "%compilerFolder%\comment.prefix.run.bat.txt" "%compilerFolder%\bat.bootstrap.ps1.finally.txt"
 goto :voidReturn
 
 :batHiddenPs1
 setLocal
   (if not ["%~1"]==[""] goto :errorReturn)
-  call :addPrefixFileHeadWithEveryLineOfFileLn "%compilerFolder%\comment.prefix.run.bat.txt" "%compilerFolder%\bat.hidden.ps1.try.txt"
   call :addFileLn "%compilerFolder%\ps1.skip.try.txt"
+  call :addPrefixFileHeadWithEveryLineOfFileLn "%compilerFolder%\comment.prefix.run.bat.txt" "%compilerFolder%\bat.hidden.ps1.try.txt"
   call :addFileLn "%compilerFolder%\bat.hidden.ps1.powershell.txt"
-  call :addFileLn "%compilerFolder%\ps1.skip.finally.txt"
   call :addPrefixFileHeadWithEveryLineOfFileLn "%compilerFolder%\comment.prefix.run.bat.txt" "%compilerFolder%\bat.hidden.ps1.finally.txt"
 goto :voidReturn
 
-:shBeforePs1
-setLocal
-  set "a1=%~1" & (if ["%~1"]==[""] goto :errorReturn)
-  (if not ["%~2"]==[""] goto :errorReturn)
-  REM start .ps1 skip over .sh
-  call :addFileLn "%compilerFolder%\ps1.skip.try.txt"
-    REM .sh
-      call :shWithoutPs1 "!a1!"
-  REM end of .ps1 skip over .sh
-  call :addFileLn "%compilerFolder%\ps1.skip.finally.txt"
-goto :voidReturn
-
-:shWithoutPs1
+:sh
 setLocal
   set "a1=%~1" & (if ["%~1"]==[""] goto :errorReturn)
   (if not ["%~2"]==[""] goto :errorReturn)
@@ -225,6 +211,7 @@ goto :voidReturn
 setLocal
   set "a1=%~1" & (if ["%~1"]==[""] goto :errorReturn)
   (if not ["%~2"]==[""] goto :errorReturn)
+  call :addFileLn "%compilerFolder%\ps1.skip.finally.txt"
   call :addFileLn "%compilerFolder%\ps1.constants.txt"
   call :addFileLn "%compilerFolder%\ps1.try.txt"
     call :addFileLn "%cliFolder%\!a1!.ps1.txt"
@@ -235,6 +222,7 @@ goto :voidReturn
 setLocal
   set "a1=%~1" & (if ["%~1"]==[""] goto :errorReturn)
   (if not ["%~2"]==[""] goto :errorReturn)
+  call :addFileLn "%compilerFolder%\ps1.skip.finally.txt"
   call :addFileLn "%compilerFolder%\ps1.constants.txt"
   call :addFileLn "%compilerFolder%\ps1.admin.txt"
   call :addFileLn "%compilerFolder%\ps1.try.txt"
