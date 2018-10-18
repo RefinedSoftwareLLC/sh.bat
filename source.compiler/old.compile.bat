@@ -18,6 +18,10 @@ call :compileAllNonprivileged "example"
 call :compileAllNonprivileged "unmute"
 call :compileAllNonprivileged "mute"
 
+call :newVersionFile "%cliFolder%\..\install.openwebpageyesno.hidden.version.txt"
+call :compileAdminHidden "install.openwebpageyesno.hidden"
+
+
 call :compileMd "README"
 call :deleleFile "..\README.md"
 move /Y "README.md" "..\README.md" >nul
@@ -37,9 +41,21 @@ setLocal
   call :compileSh "!a1!"
   call :compilePs1 "!a1!"
   call :compileShPs1 "!a1!"
+goto :voidReturn
+
+:compilePrivileged
+setLocal
+  set "a1=%~1" & (if ["%~1"]==[""] goto :errorReturn)
+  (if not ["%~2"]==[""] goto :errorReturn)
+  call :newVersionFile "%cliFolder%\..\!a1!.version.txt"
+  REM call :compileSh "!a1!"
+  REM call :compilePs1 "!a1!"
+  REM call :compileShPs1 "!a1!"
+  REM call :compileRoot "!a1!"
+  REM call :compileAdmin "!a1!"
   REM call :compileShAdmin "!a1!"
   REM call :compileRootPs1 "!a1!"
-  REM call :compileRootAdmin "!a1!"
+  call :compileRootAdmin "!a1!"
 goto :voidReturn
 
 :compileMd
@@ -95,6 +111,43 @@ setLocal
     call :bat "!a1!"
 goto :voidReturn
 
+:compileRoot
+setLocal
+  set "a1=%~1" & (if ["%~1"]==[""] goto :errorReturn)
+  (if not ["%~2"]==[""] goto :errorReturn)
+  call :setOutFile "!a1!.sh"
+  call :clear
+  REM .sh
+    call :prefixFile "%compilerFolder%\file.prefix.sh.txt"
+    call :root "!a1!"
+goto :voidReturn
+
+:compileAdmin
+setLocal
+  set "a1=%~1" & (if ["%~1"]==[""] goto :errorReturn)
+  (if not ["%~2"]==[""] goto :errorReturn)
+  call :setOutFile "!a1!.bat"
+  call :clear
+  REM .bat bootstrap
+    call :prefixFile "%compilerFolder%\file.prefix.ps1.txt"
+    call :batBootstrapPs1
+  REM .ps1
+    call :ps1Admin "!a1!"
+goto :voidReturn
+
+:compileAdminHidden
+setLocal
+  set "a1=%~1" & (if ["%~1"]==[""] goto :errorReturn)
+  (if not ["%~2"]==[""] goto :errorReturn)
+  call :setOutFile "!a1!.bat"
+  call :clear
+  REM .bat bootstrap
+    call :prefixFile "%compilerFolder%\file.prefix.ps1.txt"
+    call :batHiddenPs1
+  REM .ps1
+    call :ps1Admin "!a1!"
+goto :voidReturn
+
 :compileShPs1
 setLocal
   set "a1=%~1" & (if ["%~1"]==[""] goto :errorReturn)
@@ -110,11 +163,28 @@ setLocal
     call :ps1 "!a1!"
 goto :voidReturn
 
+:compileRootAdminHidden
+setLocal
+  set "a1=%~1" & (if ["%~1"]==[""] goto :errorReturn)
+  (if not ["%~2"]==[""] goto :errorReturn)
+  call :setOutFile "!a1!.sh.bat"
+  call :clear
+  REM .bat bootstrap
+    call :prefixFile "%compilerFolder%\file.prefix.any.txt"
+    call :batHiddenPs1
+  REM .sh
+    call :shBeforePs1 "!a1!"
+  REM .ps1
+    call :ps1Admin "!a1!"
+goto :voidReturn
+
 :batBootstrapPs1
 setLocal
   (if not ["%~1"]==[""] goto :errorReturn)
   call :addPrefixFileHeadWithEveryLineOfFileLn "%compilerFolder%\comment.prefix.run.bat.txt" "%compilerFolder%\bat.bootstrap.ps1.try.txt"
-  call :addPrefixFileHeadWithEveryLineOfFileLn "%compilerFolder%\comment.prefix.run.bat.txt" "%compilerFolder%\bat.bootstrap.ps1.powershell.txt"
+  call :addFileLn "%compilerFolder%\ps1.skip.try.txt"
+  call :addFileLn "%compilerFolder%\bat.bootstrap.ps1.powershell.txt"
+  call :addFileLn "%compilerFolder%\ps1.skip.finally.txt"
   call :addPrefixFileHeadWithEveryLineOfFileLn "%compilerFolder%\comment.prefix.run.bat.txt" "%compilerFolder%\bat.bootstrap.ps1.finally.txt"
 goto :voidReturn
 
@@ -122,7 +192,9 @@ goto :voidReturn
 setLocal
   (if not ["%~1"]==[""] goto :errorReturn)
   call :addPrefixFileHeadWithEveryLineOfFileLn "%compilerFolder%\comment.prefix.run.bat.txt" "%compilerFolder%\bat.hidden.ps1.try.txt"
-  call :addPrefixFileHeadWithEveryLineOfFileLn "%compilerFolder%\comment.prefix.run.bat.txt" "%compilerFolder%\bat.hidden.ps1.powershell.txt"
+  call :addFileLn "%compilerFolder%\ps1.skip.try.txt"
+  call :addFileLn "%compilerFolder%\bat.hidden.ps1.powershell.txt"
+  call :addFileLn "%compilerFolder%\ps1.skip.finally.txt"
   call :addPrefixFileHeadWithEveryLineOfFileLn "%compilerFolder%\comment.prefix.run.bat.txt" "%compilerFolder%\bat.hidden.ps1.finally.txt"
 goto :voidReturn
 
@@ -154,6 +226,17 @@ setLocal
   set "a1=%~1" & (if ["%~1"]==[""] goto :errorReturn)
   (if not ["%~2"]==[""] goto :errorReturn)
   call :addFileLn "%compilerFolder%\ps1.constants.txt"
+  call :addFileLn "%compilerFolder%\ps1.try.txt"
+    call :addFileLn "%cliFolder%\!a1!.ps1.txt"
+  call :addFileLn "%compilerFolder%\ps1.finally.txt"
+goto :voidReturn
+
+:ps1Admin
+setLocal
+  set "a1=%~1" & (if ["%~1"]==[""] goto :errorReturn)
+  (if not ["%~2"]==[""] goto :errorReturn)
+  call :addFileLn "%compilerFolder%\ps1.constants.txt"
+  call :addFileLn "%compilerFolder%\ps1.admin.txt"
   call :addFileLn "%compilerFolder%\ps1.try.txt"
     call :addFileLn "%cliFolder%\!a1!.ps1.txt"
   call :addFileLn "%compilerFolder%\ps1.finally.txt"

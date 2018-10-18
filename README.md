@@ -14,12 +14,20 @@ Windows:
 
     @{}# 2>/dev/null # 2>nul&setLocal&echo off
     # 2>nul&title %~nx0&(if %0 == "%~0" (cls))&pushd %~dp0
-    # 2>nul&"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "Invoke-Command -ScriptBlock ([ScriptBlock]::Create('Push-Location -LiteralPath ''%~dp0'';#'+(Get-Content -Path '%~dp0\%~nx0' | Out-String)))" -Arg @('%1','%2','%3','%4','%5','%6','%7','%8','%9')&set err=!errorlevel!
+    set .=\`';[void]@'
+    
+    # 2>nul&set "dpnx=%~dp0\%~nx0"&set "dp=%~dp0"&set "args="&(if not ["%1"]==[""] (set "args='%1'"&shift))
+    :loopTailCall 2>/dev/null
+    # 2>nul&(if not ["%1"]==[""] (set "args=%args%,'%1'"&shift&goto :loopTailCall))
+    # 2>nul&"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "Invoke-Command -ScriptBlock ([ScriptBlock]::Create('Push-Location -LiteralPath ''%dp%'';'+(Get-Content -Path '%dpnx%' | Out-String)))" -Arg @(%args%)&set err=!errorlevel!
+    
+    '@ #' 2>/dev/null # 2>null
+    
     # 2>nul&(if not !err! == 0 (if %0 == "%~0" (echo(&echo|set /p="Press any key to close..."&pause >nul)))&exit /b !err!
     set .=\`';[void]@'
     
     pushd $(dirname $(realpath $0))
-    ### DO NOT MODIFY THESE LINES - github.com/RefinedSoftwareLLC/sh.bat - v0.5.1.619 ###
+    ### DO NOT MODIFY THESE LINES - github.com/RefinedSoftwareLLC/sh.bat - v0.5.1.647 ###
     
     ################
     ### .sh mode ###
@@ -33,11 +41,12 @@ Windows:
     
     exit 0
     
-    '@
-    Set-ExecutionPolicy Bypass -Scope Process -Force -NoProfile -InputFormat None;
+    '@ #' 2>/dev/null # 2>null
+    
+    Set-ExecutionPolicy Bypass -Scope Process -Force;
     Set-StrictMode -Version 2.0
-    If (-Not $PSScriptRoot) {$PSScriptRoot=(Get-Item -Path ".\" -Verbose).FullName}
-    pushd $PSScriptRoot
+    & {param($PSScriptRoot);If (-Not $PSScriptRoot) {$Script:PSScriptRoot=(Get-Item -Path ".\" -Verbose).FullName;};};
+    pushd $PSScriptRoot;
     Function fixPath {$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")};
     fixPath;
     Function Pause {Write-Host -NoNewLine "`nPress any key to continue...";$Null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")}

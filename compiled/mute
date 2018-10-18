@@ -1,6 +1,6 @@
 #!/bin/sh
 pushd $(dirname $(realpath $0))
-### DO NOT MODIFY THESE LINES - github.com/RefinedSoftwareLLC/sh.bat - v0.5.1.619 ###
+### DO NOT MODIFY THESE LINES - github.com/RefinedSoftwareLLC/sh.bat - v0.5.1.647 ###
 
 ################
 ### .sh mode ###

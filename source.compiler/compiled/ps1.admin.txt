@@ -1,5 +1,17 @@
 Function IsNotAdmin {$CurrentUser = New-Object Security.Principal.WindowsPrincipal $([Security.Principal.WindowsIdentity]::GetCurrent());$CurrentUser.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator) -eq $False}
-If (IsNotAdmin){Try{Start-Process powershell.exe -Verb RunAs -ArgumentList ("-Exec bypass -NoProfile -File `"$($MyInvocation.MyCommand.Definition)`" $([String]$Args)");Start-Sleep -m 500;exit 0}
+If (IsNotAdmin){Try{
+  $PInfo = New-Object System.Diagnostics.ProcessStartInfo
+  $PInfo.FileName = "%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe"
+  $PInfo.RedirectStandardError = $true
+  $PInfo.RedirectStandardOutput = $true
+  $PInfo.UseShellExecute = $false
+  $PInfo.Arguments = @'
+-Verb RunAs -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "Invoke-Command -ScriptBlock ([ScriptBlock]::Create(Get-Content -Path '%~dp0\%~nx0' | Out-String))" -Arg @('%1','%2','%3','%4','%5','%6','%7','%8','%9')
+'@
+  $P = New-Object System.Diagnostics.Process
+  $P.StartInfo = $PInfo
+  $P.Start() | Out-Null
+  $P.WaitForExit();exit $P.ExitCode}
   Catch [System.InvalidOperationException]{Write-Host "`nRight-click script then select `"Run as administrator`"`n";Exit 1}
   Finally{If(IsError){Write-Throw;Exit 1}Exit 0}
 };

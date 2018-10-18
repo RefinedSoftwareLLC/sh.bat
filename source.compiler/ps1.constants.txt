@@ -1,7 +1,7 @@
-Set-ExecutionPolicy Bypass -Scope Process -Force -NoProfile -InputFormat None;
+Set-ExecutionPolicy Bypass -Scope Process -Force;
 Set-StrictMode -Version 2.0
-If (-Not $PSScriptRoot) {$PSScriptRoot=(Get-Item -Path ".\" -Verbose).FullName}
-pushd $PSScriptRoot
+& {param($PSScriptRoot);If (-Not $PSScriptRoot) {$Script:PSScriptRoot=(Get-Item -Path ".\" -Verbose).FullName;};};
+pushd $PSScriptRoot;
 Function fixPath {$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")};
 fixPath;
 Function Pause {Write-Host -NoNewLine "`nPress any key to continue...";$Null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")}
