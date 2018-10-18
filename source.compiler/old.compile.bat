@@ -21,11 +21,12 @@ call :compileAllNonprivileged "mute"
 call :newVersionFile "%cliFolder%\..\install.openwebpageyesno.hidden.version.txt"
 call :compileAdminHidden "install.openwebpageyesno.hidden"
 
-
+call :newVersionFile "%textFolder%\..\README.version.txt"
 call :compileMd "README"
 call :deleleFile "..\README.md"
 move /Y "README.md" "..\README.md" >nul
 
+call :newVersionFile "%cliFolder%\..\compile.version.txt"
 call :compileBat "compile"
 call :deleleFile "..\compile.bat"
 move /Y "compile.bat" "..\compile.bat" >nul
@@ -73,6 +74,7 @@ setLocal
     call :addFileLn "%textFolder%\!a1!.3.md.txt"
     call :mdFile "%compiledFolder%\example.sh.bat"
     call :addFile "%textFolder%\!a1!.4.md.txt"
+    call :addVersionFileLn "%textFolder%\..\!a1!.version.txt"
 goto :voidReturn
 
 :compileSh
@@ -83,6 +85,7 @@ setLocal
   call :clear
   REM .sh
     call :prefixFile "%compilerFolder%\file.prefix.sh.txt"
+    call :addVersionFileLn "%cliFolder%\..\!a1!.version.txt"
     call :sh "!a1!"
 goto :voidReturn
 
@@ -94,6 +97,7 @@ setLocal
   call :clear
   REM .bat bootstrap
     call :prefixFile "%compilerFolder%\file.prefix.ps1.txt"
+    call :addVersionFileLn "%cliFolder%\..\!a1!.version.txt"
     call :batBootstrapPs1
   REM .ps1
     call :ps1 "!a1!"
@@ -108,6 +112,7 @@ setLocal
   call :clear
   REM .bat
     call :prefixFile "%compilerFolder%\file.prefix.bat.txt"
+    call :addVersionFileLn "%cliFolder%\..\!a1!.version.txt"
     call :bat "!a1!"
 goto :voidReturn
 
@@ -119,6 +124,7 @@ setLocal
   call :clear
   REM .sh
     call :prefixFile "%compilerFolder%\file.prefix.sh.txt"
+    call :addVersionFileLn "%cliFolder%\..\!a1!.version.txt"
     call :root "!a1!"
 goto :voidReturn
 
@@ -130,6 +136,7 @@ setLocal
   call :clear
   REM .bat bootstrap
     call :prefixFile "%compilerFolder%\file.prefix.ps1.txt"
+    call :addVersionFileLn "%cliFolder%\..\!a1!.version.txt"
     call :batBootstrapPs1
   REM .ps1
     call :ps1Admin "!a1!"
@@ -143,6 +150,7 @@ setLocal
   call :clear
   REM .bat bootstrap
     call :prefixFile "%compilerFolder%\file.prefix.ps1.txt"
+    call :addVersionFileLn "%cliFolder%\..\!a1!.version.txt"
     call :batHiddenPs1
   REM .ps1
     call :ps1Admin "!a1!"
@@ -156,6 +164,7 @@ setLocal
   call :clear
   REM .bat bootstrap
     call :prefixFile "%compilerFolder%\file.prefix.any.txt"
+    call :addVersionFileLn "%cliFolder%\..\!a1!.version.txt"
     call :batBootstrapPs1
   REM .sh
     call :sh "!a1!"
@@ -171,6 +180,7 @@ setLocal
   call :clear
   REM .bat bootstrap
     call :prefixFile "%compilerFolder%\file.prefix.any.txt"
+    call :addVersionFileLn "%cliFolder%\..\!a1!.version.txt"
     call :batHiddenPs1
   REM .sh
     call :sh "!a1!"
@@ -200,9 +210,7 @@ goto :voidReturn
 setLocal
   set "a1=%~1" & (if ["%~1"]==[""] goto :errorReturn)
   (if not ["%~2"]==[""] goto :errorReturn)
-  call :addFile "%compilerFolder%\sh.try.1.txt"
-  call :addFileHead "%compilerFolder%\version.txt"
-  call :addFileLn "%compilerFolder%\sh.try.2.txt"
+  call :addFileLn "%compilerFolder%\sh.try.txt"
     call :addFileLn "%cliFolder%\!a1!.sh.txt"
   call :addFileLn "%compilerFolder%\sh.finally.txt"
 goto :voidReturn
@@ -261,6 +269,17 @@ setLocal
   call :addFileLn "%compilerFolder%\md.finally.txt"
 goto :voidReturn
 
+:addVersionFileLn
+setLocal
+  set "a1=%~1" & (if ["%~1"]==[""] goto :errorReturn)
+  (if not exist "!a1!" goto :errorReturn)
+  (if not ["%~2"]==[""] goto :errorReturn)
+  call :addFileHead "%compilerFolder%\comment.prefix.txt"
+  call :addFileHead "%compilerFolder%\version.try.txt"
+  call :addFileHead "!a1!"
+  call :addFileHeadLn "%compilerFolder%\version.finally.txt"
+goto :voidReturn
+  
 REM ###############
 REM ### library ###
 REM ###############
@@ -293,10 +312,11 @@ setLocal
   (set /a "z=z+1")
   REM %z%       =6
   REM %~n2.%z%  =0.0.0.6
-  REM call :newFileLnFromString "!a1!" "%~n2.%z%"
-    REM todo only add ln if it is missing
-    >"!a1!" (echo(%~n2.%z%)
-  REM end :newFileLnFromString
+  REM call :newFileFromString "!a1!" "%~n2.%z%"
+    >type.temp (echo(%~n2.%z%%sub%)
+    copy type.temp /a "!a1!" /b >nul
+    del type.temp
+  REM end :newFileFromString
   >"%~dp1\compiled\%~nx1" (type "!a1!")
 goto :voidReturn
 

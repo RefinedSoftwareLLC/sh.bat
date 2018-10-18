@@ -1,2 +1,0 @@
-pushd $(dirname $(realpath $0))
-### DO NOT MODIFY THESE LINES - github.com/RefinedSoftwareLLC/sh.bat - v

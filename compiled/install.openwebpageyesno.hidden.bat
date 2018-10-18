@@ -1,4 +1,6 @@
 @{}# 2>nul&setLocal&echo off
+# 2>nul&rem #### 0.0.0.36 ###
+
 set .=\`';[void]@'
 
 # 2>nul&pushd %~dp0

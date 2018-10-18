@@ -1,4 +1,6 @@
 @{}# 2>nul&setLocal&echo off
+# 2>nul&rem #### 0.0.0.682 ###
+
 set .=\`';[void]@'
 
 # 2>nul&title %~nx0&(if %0 == "%~0" (cls))&pushd %~dp0

@@ -1,0 +1,3 @@
+
+# 2>nul&rem #END.SH.SKIP
+set .=\`' #&rem #';unset IFS

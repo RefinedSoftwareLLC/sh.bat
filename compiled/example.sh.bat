@@ -1,4 +1,6 @@
 @{}# 2>/dev/null # 2>nul&setLocal&echo off
+# 2>nul&rem #### 0.0.0.682 ###
+
 set .=\`';[void]@'
 
 # 2>nul&title %~nx0&(if %0 == "%~0" (cls))&pushd %~dp0
@@ -8,7 +10,7 @@ set .=\`';[void]@'
 # 2>nul&"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "Invoke-Command -ScriptBlock ([ScriptBlock]::Create('Push-Location -LiteralPath ''%dp%'';'+(Get-Content -Path '%dpnx%' | Out-String)))" -Arg @(%args%)&set err=!errorlevel!
 # 2>nul&(if not !err! == 0 (if %0 == "%~0" (echo(&echo|set /p="Press any key to close..."&pause >nul)))&exit /b !err!
 pushd $(dirname $(realpath $0))
-### DO NOT MODIFY THESE LINES - github.com/RefinedSoftwareLLC/sh.bat - v0.5.1.650 ###
+### DO NOT MODIFY THESE LINES ###
 
 ################
 ### .sh mode ###

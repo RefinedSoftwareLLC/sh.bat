@@ -1,0 +1,2 @@
+
+set .=\`' #&rem #';IFS='' read -r -d '' String <<'# 2>nul&rem #END.SH.SKIP'||:

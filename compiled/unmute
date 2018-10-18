@@ -1,6 +1,7 @@
 #!/bin/sh
+# 2>nul&rem #### 0.0.0.82 ###
 pushd $(dirname $(realpath $0))
-### DO NOT MODIFY THESE LINES - github.com/RefinedSoftwareLLC/sh.bat - v0.5.1.650 ###
+### DO NOT MODIFY THESE LINES ###
 
 ################
 ### .sh mode ###

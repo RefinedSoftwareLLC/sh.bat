@@ -1,4 +1,5 @@
-Quote in mode:
+Begin or end quote in exact mode combination:
+
 sh bat ps1 "
 sh bat     \`"
 sh     ps1 ^"
@@ -6,3 +7,9 @@ sh     ps1 ^"
 sh         "\"
    bat     "^"
        ps1 "\`"
+
+sh     ps1 '
+sh         \`'
+       ps1 \'
+
+sh         \`\``

@@ -1,16 +1,6 @@
-#!/bin/sh
-# 2>nul&rem #### 0.0.0.682 ###
 pushd $(dirname $(realpath $0))
 ### DO NOT MODIFY THESE LINES ###
 
 ################
 ### .sh mode ###
 ################
-
-echo "passed: $*"
-
-###############
-### .sh end ###
-###############
-
-exit 0
