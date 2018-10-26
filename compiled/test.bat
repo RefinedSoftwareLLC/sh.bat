@@ -1,5 +1,5 @@
 @{}# 2>nul&setLocal&echo off
-# 2>nul&rem #### 0.0.0.137 ###
+# 2>nul&rem #### 0.0.0.318 ###
 
 set .=\`';[void]@'
 
@@ -22,6 +22,33 @@ Function Pause {Write-Host -NoNewLine "`nPress any key to continue...";$Null = $
 Function Write-Throw {For($i = $Error.count-1; $i -ge 0; $i--){$Er = $Error[$i];$Ii=$Er.InvocationInfo;$Ex=$Er.Exception;Write-Warning "$($Ii.MyCommand) : $($Ex.Message)`nAt$([char]0x00A0)$($Ii.ScriptName,'line'|?{$_-NE''}|Select -First 1):$($Ii.ScriptLineNumber) char:$($Ii.OffsetInline)`n$($Ii.Line)"}}
 Function IsError {For($i = $Error.count-1; $i -ge 0; $i--){$Er = $Error[$i];$Ii=$Er.InvocationInfo;if ($Error[0].InvocationInfo.BoundParameters["ErrorAction"] -eq "SilentlyContinue"){continue};Return $True}Return $False}
 If ($MyInvocation.MyCommand.Name) {$Host.UI.RawUI.WindowTitle = $MyInvocation.MyCommand.Name}else{$Host.UI.RawUI.WindowTitle = Split-Path -Path $Script:ShBatScriptFile -Leaf}
+Function IsNotAdmin {$CurrentUser = New-Object Security.Principal.WindowsPrincipal $([Security.Principal.WindowsIdentity]::GetCurrent());$CurrentUser.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator) -eq $False}
+If (IsNotAdmin) {
+  Try {
+    [String]$Script:ShBatScriptArgs = ($Args | ForEach-Object { '''{0}''' -f $_}) -Join(',');
+    $PSInfo = New-Object System.Diagnostics.ProcessStartInfo
+    $PSInfo.LoadUserProfile = $false;
+    $PSInfo.FileName = "$Env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe"
+    $PSInfo.Arguments = @(
+      "-NoProfile",
+      "-ExecutionPolicy", "Bypass",
+      "-InputFormat", "None",
+      "-Command", """`$ShBatScriptBlock=[ScriptBlock]::Create(`'`$Script:ShBatScriptFile=`'`'$Script:ShBatScriptFile`'`';`$Script:PSScriptRoot=`'`'$Script:PSScriptRoot`'`';Push-Location -LiteralPath `'`'$Script:PSScriptRoot`'`';`'+(Get-Content -Path `'$Script:ShBatScriptFile`' | Out-String));Invoke-Command -ScriptBlock (`$Script:ShBatScriptBlock)"""
+      "-Arg", "@($($Script:ShBatScriptArgs))"
+    );
+    $PSInfo.Verb = "runas"
+    # [System.Diagnostics.Process]::Start($PSInfo);
+    $PSProcess = New-Object System.Diagnostics.Process
+    $PSProcess.StartInfo = $PSInfo
+    Try{
+      $PSProcess.Start() | Out-Null
+      $PSProcess.WaitForExit();
+      # Write-Host "Admin Exit Code $([String]$PSProcess.ExitCode)"
+      Exit $PSProcess.ExitCode;
+    } Catch [System.Management.Automation.MethodInvocationException]{Write-Host "`nRight-click script then select `"Run as administrator`"`n";Exit 1}
+  }
+Catch [System.InvalidOperationException]{Write-Host "`nRight-click script then select `"Run as administrator`"`n";Exit 1}
+Finally {If(IsError){Write-Throw;Exit 1}Exit 0}};
 Try{
 ### DO NOT MODIFY THESE LINES ###
 
@@ -29,53 +56,13 @@ Try{
 ### .ps1 mode ###
 #################
 
-Add-Type -Language CsharpVersion3 -TypeDefinition @'
-using System.Runtime.InteropServices;
-
-[Guid("5CDF2C82-841E-4546-9722-0CF74078229A"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-interface IAudioEndpointVolume {
-  // f(), g(), ... are unused COM method slots. Define these if you care
-  int f(); int g(); int h(); int i();
-  int SetMasterVolumeLevelScalar(float fLevel, System.Guid pguidEventContext);
-  int j();
-  int GetMasterVolumeLevelScalar(out float pfLevel);
-  int k(); int l(); int m(); int n();
-  int SetMute([MarshalAs(UnmanagedType.Bool)] bool bMute, System.Guid pguidEventContext);
-  int GetMute(out bool pbMute);
+Write-Host "passed: $args"
+If (IsNotAdmin) {
+  Write-Error 'Error not admin'
+} else {
+  Write-Host 'Successfully admin'
 }
-[Guid("D666063F-1587-4E43-81F1-B948E807363F"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-interface IMMDevice {
-  int Activate(ref System.Guid id, int clsCtx, int activationParams, out IAudioEndpointVolume aev);
-}
-[Guid("A95664D2-9614-4F35-A746-DE8DB63617E6"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-interface IMMDeviceEnumerator {
-  int f(); // Unused
-  int GetDefaultAudioEndpoint(int dataFlow, int role, out IMMDevice endpoint);
-}
-[ComImport, Guid("BCDE0395-E52F-467C-8E3D-C4579291692E")] class MMDeviceEnumeratorComObject { }
-
-public class Audio {
-  static IAudioEndpointVolume Vol() {
-    var enumerator = new MMDeviceEnumeratorComObject() as IMMDeviceEnumerator;
-    IMMDevice dev = null;
-    Marshal.ThrowExceptionForHR(enumerator.GetDefaultAudioEndpoint(/*eRender*/ 0, /*eMultimedia*/ 1, out dev));
-    IAudioEndpointVolume epv = null;
-    var epvid = typeof(IAudioEndpointVolume).GUID;
-    Marshal.ThrowExceptionForHR(dev.Activate(ref epvid, /*CLSCTX_ALL*/ 23, 0, out epv));
-    return epv;
-  }
-  public static float Volume {
-    get {float v = -1; Marshal.ThrowExceptionForHR(Vol().GetMasterVolumeLevelScalar(out v)); return v;}
-    set {Marshal.ThrowExceptionForHR(Vol().SetMasterVolumeLevelScalar(value, System.Guid.Empty));}
-  }
-  public static bool Mute {
-    get { bool mute; Marshal.ThrowExceptionForHR(Vol().GetMute(out mute)); return mute; }
-    set { Marshal.ThrowExceptionForHR(Vol().SetMute(value, System.Guid.Empty)); }
-  }
-}
-'@
-echo "Muting Audio"
-[Audio]::Mute = $true
+Pause
 
 ################
 ### .ps1 end ###

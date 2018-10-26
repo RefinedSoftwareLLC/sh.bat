@@ -5,16 +5,18 @@ Second line     |
     Fifth line  |
     
 7th;4 Sp on last|
-Percent %       |
-Exclamation !   |
-Carrot ^        |
-And &           |
-Astrix *        |
-Colon :         |
-] [ brackets } {|
-{ } brackets [ ]|
-Colons :  :  :  |
+Percent % %% %%%|
+Exclamation ! !!|
+Carrot ^ ^^ At @|
+And & &&  Or | ||
+Astrix * Tilde ~|
+Colon : Semi ;  |
+Colons: : :,.+-_|
 QuotePairs''""``|
 QuoteSingles '"`|
+] [ brackets } {|
+{ } brackets [ ]|
 parentheses ) ( |
 parentheses ( ) |
+More > >> 2> 2>>|
+Less < << #$=\/?|

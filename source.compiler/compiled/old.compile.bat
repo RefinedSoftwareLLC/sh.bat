@@ -14,6 +14,15 @@ call :newVersionFile "%compilerFolder%\..\version.txt"
 
 call :deleteCompiledFolderContents "%compiledFolder%"
 
+REM todo detect source.cli file prefixes without ext like .sh
+REM Switch to correct compileFunction based on files found
+REM Ignore .ps1 file if .bat file is found.
+REM If .ps1 file and .admin file, fallback to .ps1 if admin prompt is rejected
+REM If .sh file and .root file, fallback to .sh if root prompt is rejected
+
+call :newVersionFile "%cliFolder%\..\test.version.txt"
+call :compileAdmin "test"
+
 call :compileAllNonprivileged "example"
 call :compileAllNonprivileged "unmute"
 call :compileAllNonprivileged "mute"
@@ -74,7 +83,7 @@ setLocal
     call :addFileLn "%textFolder%\!a1!.3.md.txt"
     call :mdFile "%compiledFolder%\example.sh.bat"
     call :addFile "%textFolder%\!a1!.4.md.txt"
-    call :addVersionFileLn "%textFolder%\..\!a1!.version.txt"
+    call :mdAddVersionFileLn "%textFolder%\..\!a1!.version.txt"
 goto :voidReturn
 
 :compileSh
@@ -234,7 +243,7 @@ setLocal
   call :addFileLn "%compilerFolder%\ps1.constants.txt"
   call :addFileLn "%compilerFolder%\ps1.admin.txt"
   call :addFileLn "%compilerFolder%\ps1.try.txt"
-    call :addFileLn "%cliFolder%\!a1!.ps1.txt"
+    call :addFileLn "%cliFolder%\!a1!.admin.txt"
   call :addFileLn "%compilerFolder%\ps1.finally.txt"
 goto :voidReturn
 
@@ -268,6 +277,17 @@ setLocal
   call :addPrefixFileHeadWithEveryLineOfFileLn "%compilerFolder%\comment.prefix.md.txt" "!a1!"
   call :addFileLn "%compilerFolder%\md.finally.txt"
 goto :voidReturn
+
+:mdAddVersionFileLn
+setLocal
+  set "a1=%~1" & (if ["%~1"]==[""] goto :errorReturn)
+  (if not exist "!a1!" goto :errorReturn)
+  (if not ["%~2"]==[""] goto :errorReturn)
+  call :addFile "%compilerFolder%\version.try.md.txt"
+  call :addFileHead "!a1!"
+  call :addFileLn "%compilerFolder%\version.finally.md.txt"
+goto :voidReturn
+
 
 :addVersionFileLn
 setLocal

@@ -1,0 +1,7 @@
+Write-Host "passed: $args"
+If (IsNotAdmin) {
+  Write-Error 'Error not admin'
+} else {
+  Write-Host 'Successfully admin'
+}
+Pause
