@@ -1,0 +1,2 @@
+# Admin Mode chmod change:
+# chmod +x install.sh && ./install.sh
